@@ -1,0 +1,23 @@
+[package]
+name = "reth-client"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+alloy-primitives = { version = "0.8.18", features = ["sha3-keccak"] }
+alloy-rlp = "0.3.10"
+anyhow = "1.0.95"
+eyre = "0.6.12"
+itertools = "0.14.0"
+reth-evm-ethereum = { git = "https://github.com/paradigmxyz/reth", default-features = false }
+reth-ethereum-consensus = { git = "https://github.com/paradigmxyz/reth", default-features = false }
+reth-evm = { git = "https://github.com/paradigmxyz/reth", default-features = false }
+reth-chainspec = { git = "https://github.com/paradigmxyz/reth", default-features = false }
+reth-primitives = { git = "https://github.com/paradigmxyz/reth", default-features = false, features = ["alloy-compat", "std"] }
+reth-trie = { git = "https://github.com/paradigmxyz/reth", default-features = false }
+reth-trie-common = { git = "https://github.com/paradigmxyz/reth", default-features = false }
+revm = "19.3.0"
+revm-primitives = { version = "15.1.0", features = ["serde", "std"] }
+rlp = "0.6.1"
+serde = { version = "1.0.217", default-features = false, features = ["derive"] }
+thiserror = "2.0.11"

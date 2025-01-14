@@ -1,5 +1,5 @@
 [workspace]
-members = ["eval"]
+members = ["eval", "reth-client"]
 
 resolver = "2"
 
