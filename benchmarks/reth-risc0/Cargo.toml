@@ -1,0 +1,12 @@
+[workspace]
+[package]
+name = "reth-risc0"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+risc0-zkvm = { version = "1.2.0", default-features = false, features = ["std"] }
+reth-client = { path = "../../reth-client" }
+
+[features]
+risc0 = []
