@@ -1,5 +1,5 @@
 [workspace]
-members = ["eval", "reth-client"]
+members = [ "block-downloader","eval", "reth-client"]
 
 resolver = "2"
 
