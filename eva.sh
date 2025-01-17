@@ -13,7 +13,7 @@ fi
 echo "Building program"
 
 # cd to program directory computed above
-cd "programs/$program_directory"
+cd "benchmarks/$program_directory"
 
 # If the prover is risc0, then build the program.
 if [ "$2" == "risc0" ]; then
