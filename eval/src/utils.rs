@@ -47,6 +47,8 @@ pub fn get_reth_input(args: &EvalArgs) -> ClientExecutorInput {
 
         if let Ok(bytes) = fs::read(file_path) {
             bincode::deserialize(&bytes).expect("Unable to deserialize input")
+        } else {
+            panic!("Unable to read block file");
         }
     } else {
         panic!("Block number is required for Reth program");
