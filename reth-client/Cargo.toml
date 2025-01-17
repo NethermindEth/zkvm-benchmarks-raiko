@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-alloy-primitives = { version = "0.8.18", features = ["sha3-keccak"] }
+alloy-primitives = { version = "0.8.18" }
 alloy-rlp = "0.3.10"
 anyhow = "1.0.95"
 eyre = "0.6.12"
