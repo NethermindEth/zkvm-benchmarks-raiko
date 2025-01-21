@@ -64,7 +64,10 @@ cargo run \
     -- \
     --program "$1" \
     --prover "$2" \
-    --hashfn "$3" \
-    --shard-size "$4" \
-    --filename "$5" \
-     ${6:+$([[ "$1" == "fibonacci" ]] && echo "--fibonacci-input" || echo "--block-number") $6}
+    --shard-size "$3" \
+    --filename "$4" \
+     ${5:+$([[ "$1" == "fibonacci" ]] && echo "--fibonacci-input" || echo "--block-number") $5}
+    # --hashfn "$3" \
+    # --shard-size "$4" \
+    # --filename "$5" \
+    #  ${6:+$([[ "$1" == "fibonacci" ]] && echo "--fibonacci-input" || echo "--block-number") $6}
