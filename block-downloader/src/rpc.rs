@@ -4,12 +4,13 @@ use std::{
     marker::PhantomData,
 };
 
-use alloy_provider::Provider;
-use alloy_rpc_types::{BlockId, BlockTransactionsKind};
+use alloy_provider::{network::AnyNetwork, Provider};
+use alloy_rpc_types::BlockId;
 use alloy_transport::Transport;
+use reth_primitives::revm_primitives::{
+    db::DatabaseRef, AccountInfo, Address, Bytecode, B256, U256,
+};
 use reth_storage_errors::{db::DatabaseError, provider::ProviderError};
-use revm::DatabaseRef;
-use revm_primitives::{AccountInfo, Address, Bytecode, B256, U256};
 
 /// A database that fetches data from a [Provider] over a [Transport].
 #[derive(Debug, Clone)]
@@ -37,7 +38,7 @@ pub enum RpcDbError {
     BlockNotFound,
 }
 
-impl<T: Transport + Clone, P: Provider<T> + Clone> RpcDb<T, P> {
+impl<T: Transport + Clone, P: Provider<T, AnyNetwork> + Clone> RpcDb<T, P> {
     /// Create a new [`RpcDb`].
     pub fn new(provider: P, block: u64) -> Self {
         RpcDb {
@@ -122,7 +123,7 @@ impl<T: Transport + Clone, P: Provider<T> + Clone> RpcDb<T, P> {
         // Fetch the block.
         let block = self
             .provider
-            .get_block_by_number(number.into(), BlockTransactionsKind::Full)
+            .get_block_by_number(number.into(), true)
             .await
             .map_err(|e| RpcDbError::RpcError(e.to_string()))?;
 
@@ -169,7 +170,7 @@ impl<T: Transport + Clone, P: Provider<T> + Clone> RpcDb<T, P> {
     }
 }
 
-impl<T: Transport + Clone, P: Provider<T> + Clone> DatabaseRef for RpcDb<T, P> {
+impl<T: Transport + Clone, P: Provider<T, AnyNetwork> + Clone> DatabaseRef for RpcDb<T, P> {
     type Error = ProviderError;
 
     fn basic_ref(&self, address: Address) -> Result<Option<AccountInfo>, Self::Error> {
