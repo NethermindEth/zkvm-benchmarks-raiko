@@ -14,7 +14,7 @@ use risc0_zkvm::guest::env;
 
 fn main() {
     // Read the input.
-    let mut input: ClientExecutorInput = env::read();
+    let input: ClientExecutorInput = env::read();
 
     // Execute the block.
     let executor = ClientExecutor;
