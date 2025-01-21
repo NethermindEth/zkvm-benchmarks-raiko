@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use reth_evm::execute::ProviderError;
-use revm::DatabaseRef;
-use revm_primitives::{AccountInfo, Address, Bytecode, B256, U256};
+use reth_primitives::revm_primitives::{db::DatabaseRef, AccountInfo, Bytecode};
+use revm_primitives::{Address, B256, U256};
 use serde::{Deserialize, Serialize};
 
 /// A database used to witness state inside the zkVM.

@@ -3,14 +3,17 @@ pub mod io;
 pub mod mpt;
 pub mod state;
 
-use alloy_primitives::Bloom;
+use std::fmt::Display;
+
+use alloy_primitives::{Bloom, U256};
 use reth_chainspec::ChainSpec;
 use reth_ethereum_consensus::validate_block_post_execution;
-use reth_evm::execute::{BlockExecutorProvider, ExecutionOutcome, Executor};
+use reth_evm::execute::{
+    BlockExecutionOutput, BlockExecutorProvider, ExecutionOutcome, Executor, ProviderError,
+};
 use reth_evm_ethereum::execute::EthExecutorProvider;
-use reth_primitives::{proofs, BlockExt, Header, Receipts};
-use reth_trie::KeccakKeyHasher;
-use revm::db::CacheDB;
+use reth_primitives::{proofs, BlockWithSenders, Header, Receipt, Receipts};
+use revm::db::{CacheDB, Database};
 
 use crate::io::ClientExecutorInput;
 
@@ -30,11 +33,10 @@ impl ClientExecutor {
             .with_recovered_senders()
             .ok_or("failed to recover senders")
             .unwrap();
+        let executor_difficulty = input.current_block.header.difficulty;
 
-        let executor_output = EthExecutorProvider::mainnet()
-            .executor(cache_db)
-            .execute(&executor_block_input)?;
-
+        let executor_output =
+            execute_provider(&executor_block_input, executor_difficulty, cache_db)?;
         // Validate the block post execution.
         validate_block_post_execution(
             &executor_block_input,
@@ -60,7 +62,7 @@ impl ClientExecutor {
         // Verify the state root
         input
             .parent_state
-            .update(&executor_outcome.hash_state_slow::<KeccakKeyHasher>());
+            .update(&executor_outcome.hash_state_slow());
         let state_root = input.parent_state.state_root();
 
         if state_root != input.current_block.state_root {
@@ -87,4 +89,17 @@ impl ClientExecutor {
 
         Ok(header)
     }
+}
+
+fn execute_provider<DB>(
+    executor_block_input: &BlockWithSenders,
+    executor_difficulty: U256,
+    cache_db: DB,
+) -> eyre::Result<BlockExecutionOutput<Receipt>>
+where
+    DB: Database<Error: Into<ProviderError> + Display>,
+{
+    Ok(EthExecutorProvider::mainnet()
+        .executor(cache_db)
+        .execute((executor_block_input, executor_difficulty).into())?)
 }

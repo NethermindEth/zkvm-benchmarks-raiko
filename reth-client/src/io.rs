@@ -2,10 +2,12 @@ use std::{collections::HashMap, iter::once};
 
 use eyre::Result;
 use itertools::Itertools;
-use reth_primitives::{Block, Header};
+use reth_primitives::{
+    revm_primitives::{AccountInfo, Bytecode},
+    Block, Header,
+};
 use reth_trie::TrieAccount;
-use revm_primitives::{keccak256, AccountInfo, Address, Bytecode, B256, U256};
-
+use revm_primitives::{keccak256, Address, B256, U256};
 use serde::{Deserialize, Serialize};
 
 use crate::{db::WitnessDb, state::EthereumState};
