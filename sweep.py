@@ -13,6 +13,7 @@ def run_benchmark(
     block_1,
     block_2,
     _fibonacci_inputs,
+    rpc_url=None,
 ):
     option_combinations = product(programs, provers, shard_sizes)  # hashfns)
     for program, prover, shard_size in option_combinations:
@@ -22,32 +23,24 @@ def run_benchmark(
 
         print(f"Running: {program} {prover} {shard_size}")
         for _ in range(trials):
+            cmd = [
+                "bash",
+                "eval.sh",
+                "reth" if program.startswith("reth") else program,
+                prover,
+                str(shard_size),
+                filename,
+            ]
+
             if program == "reth1":
-                subprocess.run(
-                    [
-                        "bash",
-                        "eval.sh",
-                        "reth",
-                        prover,
-                        # hashfn,
-                        str(shard_size),
-                        filename,
-                        block_1,
-                    ]
-                )
+                cmd.append(block_1)
             elif program == "reth2":
-                subprocess.run(
-                    [
-                        "bash",
-                        "eval.sh",
-                        "reth",
-                        prover,
-                        # hashfn,
-                        str(shard_size),
-                        filename,
-                        block_2,
-                    ]
-                )
+                cmd.append(block_2)
+
+            if rpc_url and program.startswith("reth"):
+                cmd.append(rpc_url)
+
+            subprocess.run(cmd)
 
 
 def main():
@@ -93,6 +86,10 @@ def main():
         default=[100, 1000, 10000, 300000],
         help="input for fibonacci",
     )
+    parser.add_argument(
+        "--rpc-url",
+        help="Optional RPC URL for downloading blocks",
+    )
 
     args = parser.parse_args()
 
@@ -106,6 +103,7 @@ def main():
         args.block_1,
         args.block_2,
         args.fibonacci,
+        args.rpc_url,
     )
 
 
