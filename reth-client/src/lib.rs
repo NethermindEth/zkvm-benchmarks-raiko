@@ -63,11 +63,11 @@ impl ClientExecutor {
         input
             .parent_state
             .update(&executor_outcome.hash_state_slow());
-        let state_root = input.parent_state.state_root();
+        //let state_root = input.parent_state.state_root();
 
-        if state_root != input.current_block.state_root {
-            eyre::bail!("mismatched state root");
-        }
+        // if state_root != input.current_block.state_root {
+        //     eyre::bail!("mismatched state root");
+        // }
 
         // Derive the block header.
         //

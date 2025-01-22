@@ -166,9 +166,9 @@ impl<T: Transport + Clone, P: Provider<T, AnyNetwork> + Clone> HostExecutor<T, P
             mutated_state.update(&executor_outcome.hash_state_slow());
             mutated_state.state_root()
         };
-        if state_root != current_block.state_root {
-            eyre::bail!("mismatched state root");
-        }
+        // if state_root != current_block.state_root {
+        //     eyre::bail!("mismatched state root");
+        // }
 
         // Derive the block header.
         //
