@@ -6212,12 +6212,17 @@ name = "zkvm-benchmarks-eval"
 version = "0.0.1"
 dependencies = [
  "bincode",
+ "block-downloader",
  "clap",
  "csv",
+ "eyre",
  "reth-client",
  "risc0-zkvm",
  "serde",
+ "tokio",
  "tracing",
+ "tracing-subscriber 0.3.19",
+ "url",
  "vergen-git2",
 ]
 

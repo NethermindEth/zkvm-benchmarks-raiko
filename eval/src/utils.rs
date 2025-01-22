@@ -38,15 +38,29 @@ pub fn get_elf(args: &EvalArgs) -> String {
 pub fn get_reth_input(args: &EvalArgs) -> ClientExecutorInput {
     if let Some(block_number) = args.block_number {
         let current_dir = env::current_dir().expect("Failed to get current working directory");
-
         let blocks_dir = current_dir.join("eval").join("blocks");
-
         let file_path = blocks_dir.join(format!("{}.bin", block_number));
 
-        if let Ok(bytes) = fs::read(file_path) {
-            bincode::deserialize(&bytes).expect("Unable to deserialize input")
-        } else {
-            panic!("Unable to read block file");
+        tracing::info!("Reading block file: {}", file_path.to_str().unwrap());
+
+        match fs::read(&file_path) {
+            Ok(bytes) => {
+                tracing::info!("Successfully read {} bytes from file", bytes.len());
+                match bincode::deserialize(&bytes) {
+                    Ok(input) => {
+                        tracing::info!("Successfully deserialized block input");
+                        input
+                    }
+                    Err(e) => {
+                        tracing::error!("Deserialization error: {:?}", e);
+                        panic!("Failed to deserialize block file: {:?}", e);
+                    }
+                }
+            }
+            Err(e) => {
+                tracing::error!("Failed to read block file: {:?}", e);
+                panic!("Unable to read block file: {:?}", e);
+            }
         }
     } else {
         panic!("Block number is required for Reth program");

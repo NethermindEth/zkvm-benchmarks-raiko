@@ -7,11 +7,14 @@ use std::{
     path::PathBuf,
 };
 
+use block_downloader::BlockDownloader;
 use clap::Parser;
 use csv::WriterBuilder;
+use eyre::{eyre, Result};
 use risc0::Risc0Evaluator;
 use serde::Serialize;
 use types::{ProgramId, ProverId};
+use url::Url;
 
 #[derive(Parser, Clone)]
 #[command(about = "Evaluate the performance of a zkVM on a program.")]
@@ -30,6 +33,8 @@ pub struct EvalArgs {
     block_number: Option<u64>,
     #[arg(long)]
     fibonacci_input: Option<u32>,
+    #[arg(long)]
+    rpc_url: Option<Url>,
 }
 
 /// The performance report of a zkVM on a program.
@@ -69,10 +74,59 @@ pub struct PerformanceReport {
     pub compress_proof_size: usize,
 }
 
-fn main() {
+/// Ensures that the required block is available locally.
+/// If not, downloads it using the BlockDownloader.
+async fn ensure_block_available(args: &EvalArgs) -> Result<()> {
+    if args.program != ProgramId::Reth {
+        return Ok(());
+    }
+
+    let block_number = if let Some(block_number) = args.block_number {
+        block_number
+    } else {
+        return Ok(());
+    };
+
+    let blocks_dir = PathBuf::from("eval/blocks");
+    let block_path = blocks_dir.join(format!("{}.bin", block_number));
+
+    // If the block file doesn't exist, download it
+    if !block_path.exists() {
+        tracing::info!("Block {} not found locally, downloading...", block_number);
+
+        // Check if RPC URL is provided when needed
+        let rpc_url = args.rpc_url.clone().ok_or_else(|| {
+            eyre!(
+                "RPC URL is required when block {} is not available locally",
+                block_number
+            )
+        })?;
+
+        let downloader = BlockDownloader::new(blocks_dir, rpc_url)?;
+        downloader.download_and_save_block(block_number).await?;
+    }
+
+    Ok(())
+}
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    // Initialize tracing
+    tracing_subscriber::FmtSubscriber::builder()
+        .with_max_level(tracing::Level::INFO)
+        .with_target(false)
+        .with_thread_ids(false)
+        .with_file(false)
+        .with_line_number(false)
+        .compact()
+        .init();
+
     let args = EvalArgs::parse();
 
-    // Select the correct implementation based on teh prover.
+    // Ensure block is available if needed
+    ensure_block_available(&args).await?;
+
+    // Select the correct implementation based on the prover.
     let report = match args.prover {
         ProverId::Risc0 => Risc0Evaluator::eval(&args),
         ProverId::SP1 => todo!(),
@@ -80,7 +134,7 @@ fn main() {
 
     // Create the results directory if it doesn't exist.
     let results_dir = PathBuf::from("results");
-    create_dir_all(&results_dir).unwrap();
+    create_dir_all(&results_dir)?;
 
     // Create the file
     let filename = format!("{}_{}.csv", args.filename, env!("VERGEN_GIT_SHA"));
@@ -88,54 +142,51 @@ fn main() {
     let file = OpenOptions::new()
         .create(true)
         .append(true)
-        .open(path.clone())
-        .unwrap();
+        .open(path.clone())?;
 
     // Write the row and the header if needed.
     let mut writer = WriterBuilder::new().from_writer(&file);
-    if file.metadata().unwrap().len() == 0 {
-        writer
-            .write_record(&[
-                "program",
-                "prover",
-                "hashfn",
-                "shard_size",
-                "shards",
-                "cycles",
-                "speed",
-                "execution_duration",
-                "prove_duration",
-                "core_prove_duration",
-                "core_verify_duration",
-                "core_proof_size",
-                "compress_prove_duration",
-                "compress_verify_duration",
-                "compress_proof_size",
-            ])
-            .unwrap();
+    if file.metadata()?.len() == 0 {
+        writer.write_record(&[
+            "program",
+            "prover",
+            "hashfn",
+            "shard_size",
+            "shards",
+            "cycles",
+            "speed",
+            "execution_duration",
+            "prove_duration",
+            "core_prove_duration",
+            "core_verify_duration",
+            "core_proof_size",
+            "compress_prove_duration",
+            "compress_verify_duration",
+            "compress_proof_size",
+        ])?;
     }
-    writer
-        .serialize(&[
-            report.program,
-            report.prover,
-            //report.hashfn,
-            report.shard_size.to_string(),
-            report.shards.to_string(),
-            report.cycles.to_string(),
-            report.speed.to_string(),
-            report.execution_duration.to_string(),
-            report.prove_duration.to_string(),
-            report.core_prove_duration.to_string(),
-            report.core_verify_duration.to_string(),
-            report.core_proof_size.to_string(),
-            report.compress_prove_duration.to_string(),
-            report.compress_verify_duration.to_string(),
-            report.compress_proof_size.to_string(),
-        ])
-        .unwrap();
-    writer.flush().unwrap();
+    writer.serialize(&[
+        report.program,
+        report.prover,
+        //report.hashfn,
+        report.shard_size.to_string(),
+        report.shards.to_string(),
+        report.cycles.to_string(),
+        report.speed.to_string(),
+        report.execution_duration.to_string(),
+        report.prove_duration.to_string(),
+        report.core_prove_duration.to_string(),
+        report.core_verify_duration.to_string(),
+        report.core_proof_size.to_string(),
+        report.compress_prove_duration.to_string(),
+        report.compress_verify_duration.to_string(),
+        report.compress_proof_size.to_string(),
+    ])?;
+    writer.flush()?;
 
     let latest_filename = format!("{}_latest.csv", args.filename);
     let latest_path = results_dir.join(latest_filename);
-    std::fs::copy(&path, &latest_path).unwrap();
+    std::fs::copy(&path, &latest_path)?;
+
+    Ok(())
 }
