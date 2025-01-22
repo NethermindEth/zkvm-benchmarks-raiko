@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 alloy-consensus = { version = "0.4.2" }
-alloy-primitives = { version = "0.8.18", features = ["sha3-keccak"] }
+alloy-primitives = { version = "0.8.18" }
 alloy-provider = { version = "0.4.2", default-features = false, features = ["reqwest", "reqwest-rustls-tls"] }
 alloy-rpc-types = { version = "0.4.2", default-features = false, features = ["eth"] }
 alloy-transport = "0.4.2"

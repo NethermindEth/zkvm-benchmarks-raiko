@@ -1,6 +1,6 @@
 use clap::Parser;
 use eyre::Result;
-use std::{fs, path::PathBuf};
+use std::path::PathBuf;
 use url::Url;
 
 use block_downloader::BlockDownloader;
@@ -33,20 +33,14 @@ async fn main() -> Result<()> {
 
     // Create blocks directory in eval if it doesn't exist
     let blocks_dir = PathBuf::from("../eval/blocks");
-    fs::create_dir_all(&blocks_dir)?;
 
-    for block_number in args.block_numbers {
-        tracing::info!("Downloading block {}", block_number);
+    // Create downloader instance
+    let downloader = BlockDownloader::new(blocks_dir, args.rpc_url)?;
 
-        let client_input = BlockDownloader::download(block_number, args.rpc_url.clone()).await?;
-
-        // Save to file using bincode
-        let file_path = blocks_dir.join(format!("block_{}.bin", block_number));
-        let encoded = bincode::serialize(&client_input)?;
-        fs::write(file_path, encoded)?;
-
-        tracing::info!("Successfully saved block {}", block_number);
-    }
+    // Download all requested blocks
+    downloader
+        .download_and_save_blocks(&args.block_numbers)
+        .await?;
 
     Ok(())
 }
