@@ -19,15 +19,13 @@ pub fn get_elf(args: &EvalArgs) -> String {
 
     let current_dir = env::current_dir().expect("Failed to get current working directory");
 
-    let target_name = match args.prover {
-        ProverId::Risc0 => "riscv32im-risc0-zkvm-elf",
+    let elf_path = match args.prover {
+        ProverId::Risc0 => current_dir.join(format!(
+            "benchmarks/{}/target/riscv-guest/methods/{}/riscv32im-risc0-zkvm-elf/release/{}",
+            program_dir, program_dir, program_dir
+        )),
         _ => panic!("prover not supported"),
     };
-
-    let elf_path = current_dir.join(format!(
-        "programs/{}/target/{}/release/{}",
-        program_dir, target_name, program_dir
-    ));
 
     let elf_path_str = elf_path
         .to_str()
