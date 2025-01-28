@@ -27,7 +27,9 @@ impl Risc0Evaluator {
         // input. Otherwise, others benchmarks don't have an input.
         let env = match args.program {
             ProgramId::Reth => {
-                let input = get_reth_input(args);
+                let input = tokio::task::block_in_place(|| {
+                    tokio::runtime::Handle::current().block_on(get_reth_input(args))
+                });
                 ExecutorEnv::builder()
                     .segment_limit_po2(args.shard_size as u32)
                     .write(&input)

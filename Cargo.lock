@@ -6192,8 +6192,9 @@ dependencies = [
 
 [[package]]
 name = "zkvm-benchmarks-eval"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
+ "alloy-provider",
  "bincode",
  "block-downloader",
  "clap",

@@ -7,10 +7,9 @@ use std::{
     path::PathBuf,
 };
 
-use block_downloader::BlockDownloader;
 use clap::Parser;
 use csv::WriterBuilder;
-use eyre::{eyre, Result};
+use eyre::Result;
 use risc0::Risc0Evaluator;
 use serde::Serialize;
 use types::{ProgramId, ProverId};
@@ -74,41 +73,6 @@ pub struct PerformanceReport {
     pub compress_proof_size: usize,
 }
 
-/// Ensures that the required block is available locally.
-/// If not, downloads it using the BlockDownloader.
-async fn ensure_block_available(args: &EvalArgs) -> Result<()> {
-    if args.program != ProgramId::Reth {
-        return Ok(());
-    }
-
-    let block_number = if let Some(block_number) = args.block_number {
-        block_number
-    } else {
-        return Ok(());
-    };
-
-    let blocks_dir = PathBuf::from("eval/blocks");
-    let block_path = blocks_dir.join(format!("{}.bin", block_number));
-
-    // If the block file doesn't exist, download it
-    if !block_path.exists() {
-        tracing::info!("Block {} not found locally, downloading...", block_number);
-
-        // Check if RPC URL is provided when needed
-        let rpc_url = args.rpc_url.clone().ok_or_else(|| {
-            eyre!(
-                "RPC URL is required when block {} is not available locally",
-                block_number
-            )
-        })?;
-
-        let downloader = BlockDownloader::new(blocks_dir, rpc_url)?;
-        downloader.download_and_save_block(block_number).await?;
-    }
-
-    Ok(())
-}
-
 #[tokio::main]
 async fn main() -> Result<()> {
     // Initialize tracing
@@ -122,9 +86,6 @@ async fn main() -> Result<()> {
         .init();
 
     let args = EvalArgs::parse();
-
-    // Ensure block is available if needed
-    ensure_block_available(&args).await?;
 
     // Select the correct implementation based on the prover.
     let report = match args.prover {
