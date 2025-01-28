@@ -1,29 +1,46 @@
 [package]
 name = "block-downloader"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 
 [dependencies]
-alloy-consensus = { version = "0.4.2" }
-alloy-primitives = { version = "0.8.18" }
-alloy-provider = { version = "0.4.2", default-features = false, features = ["reqwest", "reqwest-rustls-tls"] }
-alloy-rpc-types = { version = "0.4.2", default-features = false, features = ["eth"] }
-alloy-transport = "0.4.2"
-bincode = "1.3.3"
-clap = { version = "4.5.3", features = ["derive"] }
-eyre = "0.6.12"
-reth-chainspec = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false }
-reth-client = { path = "../reth-client" }
-reth-ethereum-consensus = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false }
-reth-evm = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false }
-reth-evm-ethereum = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false, features = ["std"] }
-reth-primitives = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false, features = ["alloy-compat", "std"] }
-reth-storage-errors = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false }
-reth-trie = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false }
-revm = { version ="14.0.0", default-features = false }
-revm-primitives = { version = "9.0.0", default-features = false, features = ["serde", "std"] }
-thiserror = "2.0.11"
-tokio = {version ="1.43.0", features = ["rt", "rt-multi-thread"] }
-tracing = "0.1.41"
-tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
-url = "2.5.4"
+thiserror.workspace = true
+serde_json.workspace = true
+url.workspace = true
+serde.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+
+# workspace
+reth-client.workspace = true
+
+# reth
+reth-primitives = { workspace = true }
+reth-storage-errors.workspace = true
+reth-trie.workspace = true
+reth-execution-types.workspace = true
+reth-errors.workspace = true
+reth-chainspec.workspace = true
+reth-revm.workspace = true
+reth-evm.workspace = true
+reth-evm-ethereum.workspace = true
+reth-ethereum-consensus.workspace = true
+
+# revm
+revm.workspace = true
+revm-primitives.workspace = true
+
+# alloy
+alloy-primitives.workspace = true
+alloy-rlp.workspace = true
+alloy-provider.workspace = true
+alloy-transport.workspace = true
+itertools.workspace = true
+alloy-rpc-types.workspace = true
+
+bincode.workspace = true
+clap.workspace = true
+eyre.workspace = true
+tracing-subscriber.workspace = true
+
+[dev-dependencies]
