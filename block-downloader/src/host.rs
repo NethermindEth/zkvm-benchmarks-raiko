@@ -13,8 +13,8 @@ use reth_evm::execute::{
 };
 use reth_evm_ethereum::execute::EthExecutorProvider;
 use reth_primitives::{proofs, Account, Block, BlockWithSenders, Receipt, Receipts};
+use reth_revm::db::{CacheDB, Database};
 use reth_trie::{AccountProof, StorageProof, EMPTY_ROOT_HASH};
-use revm::db::{CacheDB, Database};
 
 use crate::rpc::RpcDb;
 
@@ -61,7 +61,7 @@ impl<T: Transport + Clone, P: Provider<T, AnyNetwork> + Clone> HostExecutor<T, P
         tracing::info!("setting up the database for the block executor");
         let rpc_db = RpcDb::new(self.provider.clone(), block_number - 1);
         let cache_db = CacheDB::new(&rpc_db);
-        let spec = ChainSpec::default();
+        let spec = mainnet()
 
         // Execute the block and fetch all the necessary data along the way.
         // Repeat the execution made by `ClientExecutor.execute`
@@ -166,9 +166,9 @@ impl<T: Transport + Clone, P: Provider<T, AnyNetwork> + Clone> HostExecutor<T, P
             mutated_state.update(&executor_outcome.hash_state_slow());
             mutated_state.state_root()
         };
-        // if state_root != current_block.state_root {
-        //     eyre::bail!("mismatched state root");
-        // }
+        if state_root != current_block.state_root {
+            eyre::bail!("mismatched state root");
+        }
 
         // Derive the block header.
         //

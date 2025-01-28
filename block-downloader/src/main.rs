@@ -1,9 +1,10 @@
+use alloy_provider::ReqwestProvider;
 use clap::Parser;
 use eyre::Result;
-use std::path::PathBuf;
+use std::{fs, path::PathBuf};
 use url::Url;
 
-use block_downloader::BlockDownloader;
+use block_downloader::HostExecutor;
 
 #[derive(Parser)]
 #[command(about = "Download blocks and save them to disk")]
@@ -33,14 +34,21 @@ async fn main() -> Result<()> {
 
     // Create blocks directory in eval if it doesn't exist
     let blocks_dir = PathBuf::from("../eval/blocks");
+    fs::create_dir_all(&blocks_dir)?;
 
-    // Create downloader instance
-    let downloader = BlockDownloader::new(blocks_dir, args.rpc_url)?;
+    let provider = ReqwestProvider::new_http(args.rpc_url);
+    let executor = HostExecutor::new(provider);
 
-    // Download all requested blocks
-    downloader
-        .download_and_save_blocks(&args.block_numbers)
-        .await?;
+    for block_number in args.block_numbers {
+        tracing::info!("Downloading block {}", block_number);
+        let client_input = executor.execute(block_number).await?;
+
+        let file_path = blocks_dir.join(format!("{}.bin", block_number));
+        let encoded = bincode::serialize(&client_input)?;
+        fs::write(file_path, encoded)?;
+
+        tracing::info!("Successfully saved block {}", block_number);
+    }
 
     Ok(())
 }

@@ -1,16 +1,17 @@
 use std::{
     cell::RefCell,
-    collections::{BTreeMap, BTreeSet, HashMap},
+    collections::HashMap,
+    collections::{BTreeMap, BTreeSet},
     marker::PhantomData,
 };
 
 use alloy_provider::{network::AnyNetwork, Provider};
 use alloy_rpc_types::BlockId;
 use alloy_transport::Transport;
-use reth_primitives::revm_primitives::{
-    db::DatabaseRef, AccountInfo, Address, Bytecode, B256, U256,
-};
+use reth_primitives::revm_primitives::{AccountInfo, Bytecode};
+use reth_revm::DatabaseRef;
 use reth_storage_errors::{db::DatabaseError, provider::ProviderError};
+use revm_primitives::{Address, B256, U256};
 
 /// A database that fetches data from a [Provider] over a [Transport].
 #[derive(Debug, Clone)]
@@ -26,7 +27,7 @@ pub struct RpcDb<T, P> {
     /// The oldest block whose header/hash has been requested.
     pub oldest_ancestor: RefCell<u64>,
     /// A phantom type to make the struct generic over the transport.
-    pub phantom: PhantomData<T>,
+    pub _phantom: PhantomData<T>,
 }
 
 /// Errors that can occur when interacting with the [RpcDb].
@@ -36,6 +37,8 @@ pub enum RpcDbError {
     RpcError(String),
     #[error("failed to find block")]
     BlockNotFound,
+    #[error("failed to find trie node preimage")]
+    PreimageNotFound,
 }
 
 impl<T: Transport + Clone, P: Provider<T, AnyNetwork> + Clone> RpcDb<T, P> {
@@ -47,7 +50,7 @@ impl<T: Transport + Clone, P: Provider<T, AnyNetwork> + Clone> RpcDb<T, P> {
             accounts: RefCell::new(HashMap::new()),
             storage: RefCell::new(HashMap::new()),
             oldest_ancestor: RefCell::new(block),
-            phantom: PhantomData,
+            _phantom: PhantomData,
         }
     }
 
@@ -123,7 +126,7 @@ impl<T: Transport + Clone, P: Provider<T, AnyNetwork> + Clone> RpcDb<T, P> {
         // Fetch the block.
         let block = self
             .provider
-            .get_block_by_number(number.into(), true)
+            .get_block_by_number(number.into(), false)
             .await
             .map_err(|e| RpcDbError::RpcError(e.to_string()))?;
 
