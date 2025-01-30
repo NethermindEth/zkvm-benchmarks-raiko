@@ -42,13 +42,8 @@ pub fn get_reth_input(args: &EvalArgs) -> Vec<u8> {
         let blocks_dir = current_dir.join("eval").join("blocks");
         let file_path = blocks_dir.join(format!("{}.json", block_number));
 
-        tracing::info!("Reading block file: {}", file_path.to_str().unwrap());
-
         match fs::read(&file_path) {
-            Ok(bytes) => {
-                tracing::info!("Successfully read {} bytes from file", bytes.len());
-                bytes
-            }
+            Ok(bytes) => bytes,
             Err(e) => {
                 tracing::error!("Failed to read block file: {:?}", e);
                 panic!("Unable to read block file: {:?}", e);

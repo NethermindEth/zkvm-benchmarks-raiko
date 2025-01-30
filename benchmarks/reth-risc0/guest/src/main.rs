@@ -18,8 +18,7 @@ fn main() {
     let input: ClientExecutorInput = serde_json::from_slice(&input).unwrap();
 
     // Execute the block.
-    let executor = ClientExecutor;
-    let header = executor.execute(input).unwrap();
+    let header = ClientExecutor.execute(input).unwrap();
     let block_hash = header.hash_slow();
 
     env::commit(&block_hash);

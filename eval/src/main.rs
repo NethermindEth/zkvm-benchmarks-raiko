@@ -13,7 +13,6 @@ use eyre::Result;
 use risc0::Risc0Evaluator;
 use serde::Serialize;
 use types::{ProgramId, ProverId};
-use url::Url;
 
 #[derive(Parser, Clone)]
 #[command(about = "Evaluate the performance of a zkVM on a program.")]
@@ -69,6 +68,10 @@ pub struct PerformanceReport {
     pub compress_verify_duration: f64,
     /// The size of the recursive proof in bytes.
     pub compress_proof_size: usize,
+    /// The speed of the core proving time in KHz.
+    pub core_khz: f64,
+    /// The overall speed in KHz.
+    pub overall_khz: f64,
 }
 
 #[tokio::main]
@@ -109,7 +112,7 @@ async fn main() -> Result<()> {
         writer.write_record(&[
             "program",
             "prover",
-            "hashfn",
+            //"hashfn",
             "shard_size",
             "shards",
             "cycles",
@@ -122,6 +125,8 @@ async fn main() -> Result<()> {
             "compress_prove_duration",
             "compress_verify_duration",
             "compress_proof_size",
+            "core_khz",
+            "overall_khz",
         ])?;
     }
     writer.serialize(&[
@@ -140,6 +145,8 @@ async fn main() -> Result<()> {
         report.compress_prove_duration.to_string(),
         report.compress_verify_duration.to_string(),
         report.compress_proof_size.to_string(),
+        report.core_khz.to_string(),
+        report.overall_khz.to_string(),
     ])?;
     writer.flush()?;
 
