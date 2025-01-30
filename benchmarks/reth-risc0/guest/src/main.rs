@@ -14,7 +14,8 @@ use risc0_zkvm::guest::env;
 
 fn main() {
     // Read the input.
-    let input: ClientExecutorInput = env::read();
+    let input: Vec<u8> = env::read();
+    let input: ClientExecutorInput = serde_json::from_slice(&input).unwrap();
 
     // Execute the block.
     let executor = ClientExecutor;

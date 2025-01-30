@@ -9,6 +9,7 @@ vergen-git2 = { version = "1.0.0", features = ["build"] }
 [dependencies]
 alloy-provider.workspace = true
 bincode.workspace = true
+serde_json.workspace = true
 clap.workspace = true
 csv = "1.3.1"
 eyre.workspace = true

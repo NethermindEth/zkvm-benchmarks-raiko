@@ -30,6 +30,7 @@ impl Risc0Evaluator {
                 let input = tokio::task::block_in_place(|| {
                     tokio::runtime::Handle::current().block_on(get_reth_input(args))
                 });
+                let input = serde_json::to_vec(&input).unwrap();
                 ExecutorEnv::builder()
                     .segment_limit_po2(args.shard_size as u32)
                     .write(&input)
@@ -41,7 +42,7 @@ impl Risc0Evaluator {
 
         // Compute some statistics.
         let mut exec = ExecutorImpl::from_elf(env, &elf).unwrap();
-        //Generate teh session.
+        //Generate the session.
         let (session, execution_duration) = time_operation(|| exec.run().unwrap());
         let cycles = session.user_cycles;
 

@@ -1,7 +1,11 @@
 use alloy_provider::ReqwestProvider;
 use clap::Parser;
 use eyre::Result;
-use std::{fs, path::PathBuf};
+use std::{
+    fs::{self, File},
+    io::{BufWriter, Write},
+    path::PathBuf,
+};
 use url::Url;
 
 use block_downloader::HostExecutor;
@@ -43,9 +47,12 @@ async fn main() -> Result<()> {
         tracing::info!("Downloading block {}", block_number);
         let client_input = executor.execute(block_number).await?;
 
-        let file_path = blocks_dir.join(format!("{}.bin", block_number));
-        let encoded = bincode::serialize(&client_input)?;
-        fs::write(file_path, encoded)?;
+        let file_path = blocks_dir.join(format!("{}.json", block_number));
+        let file = File::create(file_path)?;
+        let mut writer = BufWriter::new(file);
+
+        serde_json::to_writer(&mut writer, &client_input)?;
+        writer.flush()?;
 
         tracing::info!("Successfully saved block {}", block_number);
     }

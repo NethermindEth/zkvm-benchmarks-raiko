@@ -2399,6 +2399,7 @@ dependencies = [
  "rlp 0.6.1",
  "serde",
  "serde_json",
+ "serde_repr",
  "thiserror 2.0.11",
  "tokio",
 ]
@@ -2718,6 +2719,8 @@ dependencies = [
  "c-kzg",
  "reth-client",
  "risc0-zkvm",
+ "risc0-zkvm-platform",
+ "serde_json",
 ]
 
 [[package]]
@@ -3308,6 +3311,17 @@ dependencies = [
  "memchr",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "serde_repr"
+version = "0.1.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c64451ba24fc7a6a2d60fc75dd9c83c90903b19028d4eff35e88fc1e86564e9"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.96",
 ]
 
 [[package]]
