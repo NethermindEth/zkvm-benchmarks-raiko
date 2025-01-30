@@ -52,12 +52,6 @@ else
   FEATURES="$2"
 fi
 
-# Optional RPC URL parameter
-RPC_URL_ARG=""
-if [ ! -z "$6" ]; then
-    RPC_URL_ARG="--rpc-url $6"
-fi
-
 # Run the benchmark.
 cargo run \
     -p zkvm-benchmarks-eval \
@@ -69,8 +63,7 @@ cargo run \
     --prover "$2" \
     --shard-size "$3" \
     --filename "$4" \
-    ${5:+$([[ "$1" == "fibonacci" ]] && echo "--fibonacci-input" || echo "--block-number") $5} \
-    $RPC_URL_ARG
+     ${5:+$([[ "$1" == "fibonacci" ]] && echo "--fibonacci-input" || echo "--block-number") $5}
     # --hashfn "$3" \
     # --shard-size "$4" \
     # --filename "$5" \

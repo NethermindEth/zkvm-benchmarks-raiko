@@ -13,7 +13,6 @@ def run_benchmark(
     block_1,
     block_2,
     _fibonacci_inputs,
-    rpc_url=None,
 ):
     option_combinations = product(programs, provers, shard_sizes)  # hashfns)
     for program, prover, shard_size in option_combinations:
@@ -36,9 +35,6 @@ def run_benchmark(
                 cmd.append(block_1)
             elif program == "reth2":
                 cmd.append(block_2)
-
-            if rpc_url and program.startswith("reth"):
-                cmd.append(rpc_url)
 
             subprocess.run(cmd)
 
@@ -86,10 +82,6 @@ def main():
         default=[100, 1000, 10000, 300000],
         help="input for fibonacci",
     )
-    parser.add_argument(
-        "--rpc-url",
-        help="Optional RPC URL for downloading blocks",
-    )
 
     args = parser.parse_args()
 
@@ -103,7 +95,6 @@ def main():
         args.block_1,
         args.block_2,
         args.fibonacci,
-        args.rpc_url,
     )
 
 

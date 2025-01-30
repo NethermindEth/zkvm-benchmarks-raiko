@@ -1,11 +1,7 @@
 use std::{
-    env,
+    env, fs,
     time::{Duration, Instant},
 };
-
-use alloy_provider::ReqwestProvider;
-use block_downloader::HostExecutor;
-use reth_client::io::ClientExecutorInput;
 
 use crate::{
     types::{ProgramId, ProverId},
@@ -37,43 +33,27 @@ pub fn get_elf(args: &EvalArgs) -> String {
     elf_path_str
 }
 
-pub async fn get_reth_input(args: &EvalArgs) -> ClientExecutorInput {
+pub fn get_reth_input(args: &EvalArgs) -> Vec<u8> {
     if let Some(block_number) = args.block_number {
         // There is a dependency mismatch that does not allow
         // `ClientExecutorInput` to be fetched from the file. Download the block
         // from the node
-        let rpc_url = args.rpc_url.clone().expect("RPC URL is required");
+        let current_dir = env::current_dir().expect("Failed to get current working directory");
+        let blocks_dir = current_dir.join("eval").join("blocks");
+        let file_path = blocks_dir.join(format!("{}.json", block_number));
 
-        let provider = ReqwestProvider::new_http(rpc_url);
-        let executor = HostExecutor::new(provider);
+        tracing::info!("Reading block file: {}", file_path.to_str().unwrap());
 
-        executor.execute(block_number).await.unwrap()
-
-        // let current_dir = env::current_dir().expect("Failed to get current working directory");
-        // let blocks_dir = current_dir.join("eval").join("blocks");
-        // let file_path = blocks_dir.join(format!("{}.bin", block_number));
-
-        // tracing::info!("Reading block file: {}", file_path.to_str().unwrap());
-
-        // match fs::read(&file_path) {
-        //     Ok(bytes) => {
-        //         tracing::info!("Successfully read {} bytes from file", bytes.len());
-        //         match bincode::deserialize(&bytes) {
-        //             Ok(input) => {
-        //                 tracing::info!("Successfully deserialized block input");
-        //                 input
-        //             }
-        //             Err(e) => {
-        //                 tracing::error!("Deserialization error: {:?}", e);
-        //                 panic!("Failed to deserialize block file: {:?}", e);
-        //             }
-        //         }
-        //     }
-        //     Err(e) => {
-        //         tracing::error!("Failed to read block file: {:?}", e);
-        //         panic!("Unable to read block file: {:?}", e);
-        //     }
-        // }
+        match fs::read(&file_path) {
+            Ok(bytes) => {
+                tracing::info!("Successfully read {} bytes from file", bytes.len());
+                bytes
+            }
+            Err(e) => {
+                tracing::error!("Failed to read block file: {:?}", e);
+                panic!("Unable to read block file: {:?}", e);
+            }
+        }
     } else {
         panic!("Block number is required for Reth program");
     }
