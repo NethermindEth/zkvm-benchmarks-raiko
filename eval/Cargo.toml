@@ -24,7 +24,8 @@ reth-client.workspace = true
 block-downloader.workspace = true
 
 # zk
-risc0-zkvm = { version = "1.2.1", features = ["prove"] }
+risc0-zkvm = { version = "1.2.2", features = ["prove"], optional = true }
 
 [features]
-risc0 = []
+cuda = ["risc0-zkvm?/cuda"]
+risc0 = ["dep:risc0-zkvm"]

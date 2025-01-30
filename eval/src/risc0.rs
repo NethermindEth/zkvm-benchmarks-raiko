@@ -1,18 +1,23 @@
+#[cfg(feature = "risc0")]
 use std::fs;
 
+#[cfg(feature = "risc0")]
 use risc0_zkvm::{
     compute_image_id, get_prover_server, ExecutorEnv, ExecutorImpl, ProverOpts, VerifierContext,
 };
 
+#[cfg(feature = "risc0")]
 use crate::{
     types::ProgramId,
     utils::{get_elf, get_reth_input, time_operation},
-    EvalArgs, PerformanceReport,
 };
+
+use crate::{EvalArgs, PerformanceReport};
 
 pub struct Risc0Evaluator;
 
 impl Risc0Evaluator {
+    #[cfg(feature = "risc0")]
     pub fn eval(args: &EvalArgs) -> PerformanceReport {
         // if args.hashfn != HashFnId::Poseidon {
         //     panic!("Only Poseidon hash function is supported for Risc0.");
@@ -102,5 +107,10 @@ impl Risc0Evaluator {
             core_khz,
             overall_khz,
         }
+    }
+
+    #[cfg(not(feature = "risc0"))]
+    pub fn eval(_args: &EvalArgs) -> PerformanceReport {
+        panic!("RISC0 feature is not enabled. Please compile with --features risc0");
     }
 }
