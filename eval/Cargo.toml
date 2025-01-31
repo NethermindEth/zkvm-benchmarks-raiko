@@ -21,11 +21,16 @@ url.workspace = true
 
 # workspace
 reth-client.workspace = true
-block-downloader.workspace = true
 
 # zk
 risc0-zkvm = { version = "1.2.2", features = ["prove"], optional = true }
 
+sp1-cuda = { version = "4.0.1", optional = true }
+sp1-prover = {version = "4.0.1", optional = true }
+sp1-sdk = {version = "4.0.1", optional = true }
+sp1-stark = {version = "4.0.1", optional = true }
+
 [features]
-cuda = ["risc0-zkvm?/cuda"]
+cuda = ["dep:sp1-cuda", "risc0-zkvm?/cuda"]
 risc0 = ["dep:risc0-zkvm"]
+sp1 = ["dep:sp1-prover", "dep:sp1-sdk", "dep:sp1-stark"]

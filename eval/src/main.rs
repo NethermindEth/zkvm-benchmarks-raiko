@@ -1,4 +1,5 @@
 mod risc0;
+mod sp1;
 mod types;
 mod utils;
 
@@ -10,9 +11,11 @@ use std::{
 use clap::Parser;
 use csv::WriterBuilder;
 use eyre::Result;
-use risc0::Risc0Evaluator;
 use serde::Serialize;
 use types::{ProgramId, ProverId};
+
+use risc0::Risc0Evaluator;
+use sp1::SP1Evaluator;
 
 #[derive(Parser, Clone)]
 #[command(about = "Evaluate the performance of a zkVM on a program.")]
@@ -91,7 +94,7 @@ async fn main() -> Result<()> {
     // Select the correct implementation based on the prover.
     let report = match args.prover {
         ProverId::Risc0 => Risc0Evaluator::eval(&args),
-        ProverId::SP1 => todo!(),
+        ProverId::SP1 => SP1Evaluator::eval(&args),
     };
 
     // Create the results directory if it doesn't exist.

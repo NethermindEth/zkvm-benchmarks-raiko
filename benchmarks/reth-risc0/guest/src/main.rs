@@ -21,5 +21,5 @@ fn main() {
     let header = ClientExecutor.execute(input).unwrap();
     let block_hash = header.hash_slow();
 
-    env::commit(&block_hash);
+    println!("block_hash: {:?}", block_hash);
 }
