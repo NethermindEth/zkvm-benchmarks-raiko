@@ -8,17 +8,18 @@
 #![no_main]
 sp1_zkvm::entrypoint!(main);
 
-use reth_client::{io::ClientExecutorInput, ClientExecutor};
+use rsp_client_executor::{io::ClientExecutorInput, ChainVariant, ClientExecutor};
 
-use sp1_zkvm::io::read_vec;
+use sp1_zkvm::io::read;
 
 fn main() {
     // Read the input.
-    let input: Vec<u8> = read_vec();
-    let input: ClientExecutorInput = serde_json::from_slice(&input).unwrap();
+    let input: Vec<u8> = read();
+    let input = bincode::deserialize::<ClientExecutorInput>(&input).unwrap();
 
     // Execute the block.
-    let header = ClientExecutor.execute(input).unwrap();
+    let chain = ChainVariant::mainnet();
+    let header = ClientExecutor.execute(input, &chain).unwrap();
     let block_hash = header.hash_slow();
 
     println!("block_hash: {:?}", block_hash);

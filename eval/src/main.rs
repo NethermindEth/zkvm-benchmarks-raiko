@@ -77,19 +77,20 @@ pub struct PerformanceReport {
     pub overall_khz: f64,
 }
 
-#[tokio::main]
-async fn main() -> Result<()> {
-    // Initialize tracing
-    tracing_subscriber::FmtSubscriber::builder()
-        .with_max_level(tracing::Level::INFO)
-        .with_target(false)
-        .with_thread_ids(false)
-        .with_file(false)
-        .with_line_number(false)
-        .compact()
-        .init();
-
+fn main() -> Result<()> {
     let args = EvalArgs::parse();
+
+    if args.prover != ProverId::SP1 {
+        // Initialize tracing
+        tracing_subscriber::FmtSubscriber::builder()
+            .with_max_level(tracing::Level::INFO)
+            .with_target(false)
+            .with_thread_ids(false)
+            .with_file(false)
+            .with_line_number(false)
+            .compact()
+            .init();
+    }
 
     // Select the correct implementation based on the prover.
     let report = match args.prover {

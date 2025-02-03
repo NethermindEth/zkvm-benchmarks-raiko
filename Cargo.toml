@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "block-downloader",
-    "reth-client",
+    #"reth-client",
     "eval",
 ]
 resolver = "2"
@@ -24,35 +24,36 @@ tokio = { version = "1.43.0", features = ["rt", "rt-multi-thread", "macros"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 url = "2.5.4"
+rsp-client-executor = { git = "https://github.com/succinctlabs/rsp/", rev = "94f9740" }
 
 # alloy
-alloy-primitives = { version = "0.8.18", default-features = false, features = ["k256"] }
-alloy-provider = { version = "0.4.2", default-features = false, features = ["reqwest", "reqwest-rustls-tls"] }
-alloy-rlp = "0.3.8"
-alloy-rpc-types = { version = "0.4.2", default-features = false, features = ["eth"] }
-alloy-transport = "0.4.2"
+# alloy-primitives = { version = "0.8.18", default-features = false, features = ["k256"] }
+alloy-provider = { version = "0.3", default-features = false, features = ["reqwest", "reqwest-rustls-tls"] }
+# alloy-rlp = "0.3.8"
+# alloy-rpc-types = { version = "0.4.2", default-features = false, features = ["eth"] }
+# alloy-transport = "0.4.2"
 
 # reth dependencies
-reth-chainspec = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false, features = ["std"] }
-reth-consensus = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd" }
-reth-errors = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false }
-reth-ethereum-consensus = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd" }
-reth-evm = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false, features = ["std"] }
-reth-evm-ethereum = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false, features = ["std"] }
-reth-execution-types = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false }
-reth-primitives = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false, features = ["alloy-compat", "std"] }
-reth-revm = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false, features = ["std"] }
-reth-storage-errors = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false, features = ["std"] }
-reth-trie = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd" }
-reth-trie-common = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd" }
+# reth-chainspec = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false, features = ["std"] }
+# reth-consensus = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd" }
+# reth-errors = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false }
+# reth-ethereum-consensus = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd" }
+# reth-evm = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false, features = ["std"] }
+# reth-evm-ethereum = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false, features = ["std"] }
+# reth-execution-types = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false }
+# reth-primitives = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false, features = ["alloy-compat", "std"] }
+# reth-revm = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false, features = ["std"] }
+# reth-storage-errors = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd", default-features = false, features = ["std"] }
+# reth-trie = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd" }
+# reth-trie-common = { git = "https://github.com/risc0/reth", branch = "p1.1.0_zstd" }
 
 # workspace
-reth-client = { path = "reth-client" }
+#reth-client = { path = "reth-client" }
 block-downloader = { path = "block-downloader" }
 
 # revm
-revm = { version = "14.0.3", default-features = false, features = ["std", "serde"] }
-revm-primitives = { version = "10.0.0", default-features = false }
+# revm = { version = "14.0.3", default-features = false, features = ["std", "serde"] }
+# revm-primitives = { version = "10.0.0", default-features = false }
 
 [profile.dev]
 opt-level = 3

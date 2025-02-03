@@ -29,7 +29,7 @@ pub fn get_elf(args: &EvalArgs) -> String {
             program_dir, program_dir, target_name, program_dir
         )),
         ProverId::SP1 => current_dir.join(format!(
-            "programs/{}/target/{}/release/{}",
+            "benchmarks/{}/target/{}/release/{}",
             program_dir, target_name, program_dir
         )),
         _ => panic!("prover not supported"),
@@ -45,9 +45,6 @@ pub fn get_elf(args: &EvalArgs) -> String {
 
 pub fn get_reth_input(args: &EvalArgs) -> Vec<u8> {
     if let Some(block_number) = args.block_number {
-        // There is a dependency mismatch that does not allow
-        // `ClientExecutorInput` to be fetched from the file. Download the block
-        // from the node
         let current_dir = env::current_dir().expect("Failed to get current working directory");
         let blocks_dir = current_dir.join("eval").join("blocks");
         let file_path = blocks_dir.join(format!("{}.json", block_number));

@@ -25,7 +25,7 @@ fi
 if [ "$2" == "sp1" ]; then
     # The reason we don't just use `cargo prove build` from the SP1 CLI is we need to pass a --features ...
     # flag to select between sp1 and risc0.
-    RUSTFLAGS="-C passes=loweratomic -C link-arg=-Ttext=0x00200800 -C panic=abort" \
+    RUSTFLAGS="-C passes=lower-atomic -C link-arg=-Ttext=0x00200800 -C panic=abort" \
         RUSTUP_TOOLCHAIN=succinct \
         CARGO_BUILD_TARGET=riscv32im-succinct-zkvm-elf \
         cargo build --release --ignore-rust-version --features $2
@@ -62,7 +62,8 @@ else
 fi
 
 # Run the benchmark.
-  cargo run \
+  RISC0_DEV_MODE=true\
+    cargo run \
     -p zkvm-benchmarks-eval \
     --release \
     --no-default-features \

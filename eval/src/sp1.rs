@@ -38,7 +38,7 @@ impl SP1Evaluator {
             ProgramId::Reth => {
                 let input = get_reth_input(args);
                 let mut stdin = SP1Stdin::new();
-                stdin.write(&input);
+                stdin.write::<Vec<u8>>(&input);
                 stdin
             }
             _ => SP1Stdin::new(),
@@ -135,7 +135,7 @@ impl SP1Evaluator {
     }
 
     #[cfg(not(feature = "sp1"))]
-    pub fn eval(args: &EvalArgs) -> PerformanceReport {
+    pub fn eval(_args: &EvalArgs) -> PerformanceReport {
         panic!("SP1 feature is not enabled. Please compile with --features sp1");
     }
 }

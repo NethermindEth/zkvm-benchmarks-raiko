@@ -1,14 +1,15 @@
+use std::{
+    fs::{self, File},
+    io::BufWriter,
+    path::PathBuf,
+};
+
 use alloy_provider::ReqwestProvider;
 use clap::Parser;
 use eyre::Result;
-use std::{
-    fs::{self, File},
-    io::{BufWriter, Write},
-    path::PathBuf,
-};
+use rsp_client_executor::ChainVariant;
+use rsp_host_executor::HostExecutor;
 use url::Url;
-
-use block_downloader::HostExecutor;
 
 #[derive(Parser)]
 #[command(about = "Download blocks and save them to disk")]
@@ -42,17 +43,17 @@ async fn main() -> Result<()> {
 
     let provider = ReqwestProvider::new_http(args.rpc_url);
     let executor = HostExecutor::new(provider);
+    let chain = ChainVariant::mainnet();
 
     for block_number in args.block_numbers {
         tracing::info!("Downloading block {}", block_number);
-        let client_input = executor.execute(block_number).await?;
+        let client_input = executor.execute(block_number, &chain, None).await?;
 
-        let file_path = blocks_dir.join(format!("{}.json", block_number));
+        let file_path = blocks_dir.join(format!("{}.bin", block_number));
         let file = File::create(file_path)?;
         let mut writer = BufWriter::new(file);
 
-        serde_json::to_writer(&mut writer, &client_input)?;
-        writer.flush()?;
+        bincode::serialize_into(&mut writer, &client_input)?;
 
         tracing::info!("Successfully saved block {}", block_number);
     }
