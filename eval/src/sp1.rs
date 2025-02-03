@@ -5,7 +5,7 @@ use std::fs;
 use sp1_prover::{components::CpuProverComponents, utils::get_cycles};
 #[cfg(feature = "sp1")]
 use sp1_sdk::{setup_logger, SP1Context, SP1Prover, SP1Stdin};
-#[cfg(feature = "sp1")]
+#[cfg(all(feature = "sp1", not(feature = "cuda")))]
 use sp1_stark::SP1ProverOpts;
 
 #[cfg(all(feature = "cuda", feature = "sp1"))]
@@ -58,7 +58,7 @@ impl SP1Evaluator {
         let (_, pk_d, program, vk) = prover.setup(&elf);
 
         #[cfg(feature = "cuda")]
-        let (pk, vk) = server.setup(&elf).unwrap();
+        let (_, vk) = server.setup(&elf).unwrap();
 
         // Execute the program.
         let context = SP1Context::default();
