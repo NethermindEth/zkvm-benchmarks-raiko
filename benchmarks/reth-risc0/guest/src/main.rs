@@ -8,12 +8,15 @@
 #![no_main]
 risc0_zkvm::guest::entry!(main);
 
+use std::io::Read;
+
 use risc0_zkvm::guest::env;
 use rsp_client_executor::{io::ClientExecutorInput, ClientExecutor, EthereumVariant};
 
 fn main() {
     // Read the input.
-    let input: Vec<u8> = env::read();
+    let mut input = Vec::new();
+    env::stdin().read_to_end(&mut input).unwrap();
     let block = bincode::deserialize::<ClientExecutorInput>(&input).unwrap();
 
     // Execute the block.

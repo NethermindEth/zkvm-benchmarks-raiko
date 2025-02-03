@@ -62,7 +62,7 @@ else
 fi
 
 # Run the benchmark.
-RISC0_DEV_MODE=true\
+RISC0_INFO=1 \
     cargo run \
     -p zkvm-benchmarks-eval \
     --release \

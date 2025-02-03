@@ -35,8 +35,7 @@ impl Risc0Evaluator {
                 let input = get_reth_input(args);
                 ExecutorEnv::builder()
                     .segment_limit_po2(args.shard_size as u32)
-                    .write(&input)
-                    .expect("Failed to write input to executor")
+                    .write_slice(&input)
                     .build()
                     .unwrap()
             }
