@@ -27,8 +27,8 @@ impl SP1Evaluator {
         // Setup the logger.
         setup_logger();
 
-        // // Set enviroment variables to configure the prover.
-        // std::env::set_var("SHARD_SIZE", format!("{}", 1 << args.shard_size));
+        // Set enviroment variables to configure the prover.
+        std::env::set_var("SHARD_SIZE", format!("{}", 1 << args.shard_size));
         // if args.program == ProgramId::Reth {
         //     std::env::set_var("SHARD_CHUNKING_MULTIPLIER", "4");
         // }
