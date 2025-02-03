@@ -1,6 +1,5 @@
 use std::{
     fs::{self, File},
-    io::BufWriter,
     path::PathBuf,
 };
 
@@ -43,17 +42,16 @@ async fn main() -> Result<()> {
 
     let provider = ReqwestProvider::new_http(args.rpc_url);
     let executor = HostExecutor::new(provider);
-    let chain = ChainVariant::mainnet();
+    let chain = ChainVariant::Ethereum;
 
     for block_number in args.block_numbers {
         tracing::info!("Downloading block {}", block_number);
-        let client_input = executor.execute(block_number, &chain, None).await?;
+        let client_input = executor.execute(block_number, chain).await?;
 
         let file_path = blocks_dir.join(format!("{}.bin", block_number));
-        let file = File::create(file_path)?;
-        let mut writer = BufWriter::new(file);
+        let mut file = File::create(file_path)?;
 
-        bincode::serialize_into(&mut writer, &client_input)?;
+        bincode::serialize_into(&mut file, &client_input)?;
 
         tracing::info!("Successfully saved block {}", block_number);
     }

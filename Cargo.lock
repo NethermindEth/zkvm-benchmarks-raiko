@@ -5817,14 +5817,14 @@ dependencies = [
 [[package]]
 name = "rsp-client-executor"
 version = "0.1.0"
-source = "git+https://github.com/succinctlabs/rsp/?rev=94f9740#94f97408844698335d14d735f494c46b3dac3c6e"
+source = "git+https://github.com/succinctlabs/rsp/?rev=249b34e#249b34ee0c5307b59dc48f1f45a474b04669c6c4"
 dependencies = [
  "alloy-primitives",
  "alloy-rlp",
+ "eyre",
  "futures",
  "itertools 0.13.0",
  "reth-chainspec",
- "reth-consensus",
  "reth-errors",
  "reth-ethereum-consensus",
  "reth-evm",
@@ -5843,7 +5843,6 @@ dependencies = [
  "rsp-witness-db",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
  "tokio",
  "url",
 ]
@@ -5851,13 +5850,14 @@ dependencies = [
 [[package]]
 name = "rsp-host-executor"
 version = "0.1.0"
-source = "git+https://github.com/succinctlabs/rsp/?rev=94f9740#94f97408844698335d14d735f494c46b3dac3c6e"
+source = "git+https://github.com/succinctlabs/rsp/?rev=249b34e#249b34ee0c5307b59dc48f1f45a474b04669c6c4"
 dependencies = [
  "alloy-primitives",
  "alloy-provider",
  "alloy-rlp",
  "alloy-rpc-types",
  "alloy-transport",
+ "eyre",
  "futures",
  "itertools 0.13.0",
  "reth-chainspec",
@@ -5876,7 +5876,6 @@ dependencies = [
  "rsp-witness-db",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
  "tokio",
  "tracing",
  "url",
@@ -5885,11 +5884,13 @@ dependencies = [
 [[package]]
 name = "rsp-mpt"
 version = "0.1.0"
-source = "git+https://github.com/succinctlabs/rsp/?rev=94f9740#94f97408844698335d14d735f494c46b3dac3c6e"
+source = "git+https://github.com/succinctlabs/rsp/?rev=249b34e#249b34ee0c5307b59dc48f1f45a474b04669c6c4"
 dependencies = [
  "alloy-primitives",
  "alloy-rlp",
  "alloy-rpc-types",
+ "anyhow",
+ "eyre",
  "itertools 0.13.0",
  "reth-execution-types",
  "reth-primitives",
@@ -5905,9 +5906,10 @@ dependencies = [
 [[package]]
 name = "rsp-primitives"
 version = "0.1.0"
-source = "git+https://github.com/succinctlabs/rsp/?rev=94f9740#94f97408844698335d14d735f494c46b3dac3c6e"
+source = "git+https://github.com/succinctlabs/rsp/?rev=249b34e#249b34ee0c5307b59dc48f1f45a474b04669c6c4"
 dependencies = [
  "alloy-rpc-types",
+ "eyre",
  "reth-chainspec",
  "reth-optimism-chainspec",
  "reth-primitives",
@@ -5924,7 +5926,7 @@ dependencies = [
 [[package]]
 name = "rsp-rpc-db"
 version = "0.1.0"
-source = "git+https://github.com/succinctlabs/rsp/?rev=94f9740#94f97408844698335d14d735f494c46b3dac3c6e"
+source = "git+https://github.com/succinctlabs/rsp/?rev=249b34e#249b34ee0c5307b59dc48f1f45a474b04669c6c4"
 dependencies = [
  "alloy-provider",
  "alloy-rlp",
@@ -5946,7 +5948,7 @@ dependencies = [
 [[package]]
 name = "rsp-witness-db"
 version = "0.1.0"
-source = "git+https://github.com/succinctlabs/rsp/?rev=94f9740#94f97408844698335d14d735f494c46b3dac3c6e"
+source = "git+https://github.com/succinctlabs/rsp/?rev=249b34e#249b34ee0c5307b59dc48f1f45a474b04669c6c4"
 dependencies = [
  "reth-primitives",
  "reth-storage-errors",

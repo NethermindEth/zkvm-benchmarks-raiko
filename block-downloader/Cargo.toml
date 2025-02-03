@@ -9,7 +9,7 @@ bincode.workspace = true
 clap.workspace = true
 eyre.workspace = true
 rsp-client-executor.workspace = true
-rsp-host-executor = { git = "https://github.com/succinctlabs/rsp/", rev = "94f9740" }
+rsp-host-executor.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true

@@ -47,7 +47,7 @@ pub fn get_reth_input(args: &EvalArgs) -> Vec<u8> {
     if let Some(block_number) = args.block_number {
         let current_dir = env::current_dir().expect("Failed to get current working directory");
         let blocks_dir = current_dir.join("eval").join("blocks");
-        let file_path = blocks_dir.join(format!("{}.json", block_number));
+        let file_path = blocks_dir.join(format!("{}.bin", block_number));
 
         match fs::read(&file_path) {
             Ok(bytes) => bytes,

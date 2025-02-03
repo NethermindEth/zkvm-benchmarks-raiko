@@ -344,6 +344,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "anyhow"
+version = "1.0.95"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "34ac096ce696dc2fcabef30516bb13c0a68a11d30131d3df6f04711467681b04"
+
+[[package]]
 name = "ark-ff"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1023,6 +1029,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "eyre"
+version = "0.6.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7cd915d99f24784cdc19fd37ef22b97e3ff0ae756c7e492e9fbfe897d61e2aec"
+dependencies = [
+ "indenter",
+ "once_cell",
+]
+
+[[package]]
 name = "fastrand"
 version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1508,6 +1524,12 @@ dependencies = [
  "quote",
  "syn 2.0.98",
 ]
+
+[[package]]
+name = "indenter"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ce23b50ad8242c51a442f3ff322d56b02f08852c77e4c0b4d3fd684abc89c683"
 
 [[package]]
 name = "indexmap"
@@ -2826,14 +2848,14 @@ dependencies = [
 [[package]]
 name = "rsp-client-executor"
 version = "0.1.0"
-source = "git+https://github.com/succinctlabs/rsp/?rev=94f9740#94f97408844698335d14d735f494c46b3dac3c6e"
+source = "git+https://github.com/succinctlabs/rsp/?rev=249b34e#249b34ee0c5307b59dc48f1f45a474b04669c6c4"
 dependencies = [
  "alloy-primitives",
  "alloy-rlp",
+ "eyre",
  "futures",
  "itertools 0.13.0",
  "reth-chainspec",
- "reth-consensus",
  "reth-errors",
  "reth-ethereum-consensus",
  "reth-evm",
@@ -2852,7 +2874,6 @@ dependencies = [
  "rsp-witness-db",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
  "tokio",
  "url",
 ]
@@ -2860,11 +2881,13 @@ dependencies = [
 [[package]]
 name = "rsp-mpt"
 version = "0.1.0"
-source = "git+https://github.com/succinctlabs/rsp/?rev=94f9740#94f97408844698335d14d735f494c46b3dac3c6e"
+source = "git+https://github.com/succinctlabs/rsp/?rev=249b34e#249b34ee0c5307b59dc48f1f45a474b04669c6c4"
 dependencies = [
  "alloy-primitives",
  "alloy-rlp",
  "alloy-rpc-types",
+ "anyhow",
+ "eyre",
  "itertools 0.13.0",
  "reth-execution-types",
  "reth-primitives",
@@ -2880,9 +2903,10 @@ dependencies = [
 [[package]]
 name = "rsp-primitives"
 version = "0.1.0"
-source = "git+https://github.com/succinctlabs/rsp/?rev=94f9740#94f97408844698335d14d735f494c46b3dac3c6e"
+source = "git+https://github.com/succinctlabs/rsp/?rev=249b34e#249b34ee0c5307b59dc48f1f45a474b04669c6c4"
 dependencies = [
  "alloy-rpc-types",
+ "eyre",
  "reth-chainspec",
  "reth-optimism-chainspec",
  "reth-primitives",
@@ -2899,7 +2923,7 @@ dependencies = [
 [[package]]
 name = "rsp-witness-db"
 version = "0.1.0"
-source = "git+https://github.com/succinctlabs/rsp/?rev=94f9740#94f97408844698335d14d735f494c46b3dac3c6e"
+source = "git+https://github.com/succinctlabs/rsp/?rev=249b34e#249b34ee0c5307b59dc48f1f45a474b04669c6c4"
 dependencies = [
  "reth-primitives",
  "reth-storage-errors",

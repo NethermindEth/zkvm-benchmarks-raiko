@@ -37,8 +37,13 @@ impl SP1Evaluator {
         let stdin = match args.program {
             ProgramId::Reth => {
                 let input = get_reth_input(args);
+                bincode::deserialize::<rsp_client_executor::io::ClientExecutorInput>(
+                    &input.clone(),
+                )
+                .unwrap();
+
                 let mut stdin = SP1Stdin::new();
-                stdin.write::<Vec<u8>>(&input);
+                stdin.write_vec(input);
                 stdin
             }
             _ => SP1Stdin::new(),
