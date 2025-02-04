@@ -34,4 +34,8 @@ cd ../
 rm llvm-valida-v0.7.0-alpha-linux-x86_64.tar.xz
 rm -rf valida-toolchain
 
+# Install the jolt toolchain
+rustup toolchain install nightly-2024-09-30
+cargo +nightly-2024-09-30 install --git https://github.com/a16z/jolt --force --bins jolt || error_exit "Installing jolt toolchain"
+
 echo "All installations completed successfully."

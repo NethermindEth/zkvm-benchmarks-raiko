@@ -44,13 +44,23 @@ cd valida-toolchain
 sudo ./install.sh
 ```
 
-5. Install [Docker](https://docs.docker.com/engine/install/ubuntu/).
+5. Install the [Jolt toolchain](https://jolt.a16zcrypto.com/usage/install.html)
 
-6. If using NVIDIA GPUs, install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
+``` sh
+rustup toolchain install nightly-2024-09-30
+cargo +nightly-2024-09-30 install --git https://github.com/a16z/jolt --force --bins jolt || error_exit "Installing jolt toolchain"
+```
+
+6. Install [Docker](https://docs.docker.com/engine/install/ubuntu/).
+
+7. If using NVIDIA GPUs, install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
 
 **Note:** Run one round of a small program (e.g., Fibonacci) to download the R0 docker image before benchmarking to avoid affecting benchmark times.
 
 **Note:** On Ubuntu 22.04, you might need to install libssl1.0 for the Risc0 toolchain. Follow these [instructions](https://stackoverflow.com/questions/72133316/libssl-so-1-1-cannot-open-shared-object-file-no-such-file-or-directory/73604364#73604364).
+
+**Note:** For jolt you need to install `pkg-config` and `libssl-dev` (i.e. `apt
+install pkg-config libssl-dev`)
 
 
 ## Running Benchmarks

@@ -2,6 +2,12 @@
 set -e
 echo "Running $1, $2, $3, $4, $5"
 
+# If $2 == jolt, append precompiles to Cargo.toml
+if [ "$2" = "jolt" ]; then
+    cp Cargo.toml Cargo.toml.bak
+    cat patches/jolt.txt >> Cargo.toml
+fi
+
 # Get program directory name as $1 and append "-$2" to it if $1 is "tendermint"
 # or "reth"
 if [ "$1" = "tendermint" ] || [ "$1" = "reth" ]; then
@@ -77,6 +83,12 @@ else
   FEATURES="$2"
 fi
 
+if [ "$2" = "jolt" ]; then
+  export RUSTFLAGS=""
+  export RUSTUP_TOOLCHAIN="nightly-2024-09-30"
+fi
+
+
 # Run the benchmark.
 RISC0_INFO=1 \
     cargo run \
@@ -95,4 +107,9 @@ RISC0_INFO=1 \
     # --filename "$5" \
     #  ${6:+$([[ "$1" == "fibonacci" ]] && echo "--fibonacci-input" || echo "--block-number") $6}
 
-  exit $?
+# Revert Cargo.toml as the last step
+if [ "$2" = "nexus" ] || [ "$2" = "jolt" ]; then
+    mv Cargo.toml.bak Cargo.toml
+fi
+
+exit $?
