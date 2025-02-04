@@ -8,6 +8,9 @@ risc0_zkvm::guest::entry!(main);
 #[cfg(feature = "sp1")]
 sp1_zkvm::entrypoint!(main);
 
+#[cfg(feature = "lita")]
+valida_rs::entrypoint!(main);
+
 fn fibonacci(n: u32) -> u32 {
     let mut a = 0;
     let mut b = 1;
@@ -25,6 +28,9 @@ pub fn main() {
 
     #[cfg(feature = "sp1")]
     let input: u32 = sp1_zkvm::io::read();
+
+    #[cfg(feature = "lita")]
+    let input = 300000;
 
     let result = black_box(fibonacci(black_box(input)));
     println!("result {}", result);

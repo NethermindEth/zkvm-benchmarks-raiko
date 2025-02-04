@@ -35,9 +35,18 @@ You can run `install.sh` or do it manually
    cargo risczero --version
    ```
 
-4. Install [Docker](https://docs.docker.com/engine/install/ubuntu/).
+4. Install the [Lita toolchain](https://lita.gitbook.io/lita-documentation/quick-start/installation-and-system-requirements):
 
-5. If using NVIDIA GPUs, install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
+``` sh
+wget https://github.com/lita-xyz/llvm-valida-releases/releases/download/v0.7.0-alpha/llvm-valida-v0.7.0-alpha-linux-x86_64.tar.xz
+tar xf llvm-valida-v0.7.0-alpha-linux-x86_64.tar.gz
+cd valida-toolchain
+sudo ./install.sh
+```
+
+5. Install [Docker](https://docs.docker.com/engine/install/ubuntu/).
+
+6. If using NVIDIA GPUs, install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
 
 **Note:** Run one round of a small program (e.g., Fibonacci) to download the R0 docker image before benchmarking to avoid affecting benchmark times.
 

@@ -22,6 +22,9 @@ risc0_zkvm::guest::entry!(main);
 #[cfg(feature = "sp1")]
 sp1_zkvm::entrypoint!(main);
 
+#[cfg(feature = "lita")]
+valida_rs::entrypoint!(main);
+
 #[cfg(target_os = "zkvm")]
 use core::arch::asm;
 
