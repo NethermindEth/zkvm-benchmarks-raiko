@@ -10,7 +10,7 @@ use crate::{
 
 pub fn get_elf(args: &EvalArgs) -> String {
     let mut program_dir = args.program.to_string();
-    if args.program == ProgramId::Reth {
+    if args.program == ProgramId::Tendermint || args.program == ProgramId::Reth {
         program_dir += "-";
         program_dir += args.prover.to_string().as_str();
     }

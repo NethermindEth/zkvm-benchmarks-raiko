@@ -41,6 +41,11 @@ impl SP1Evaluator {
                 stdin.write_vec(input);
                 stdin
             }
+            ProgramId::Fibonacci => {
+                let mut stdin = SP1Stdin::new();
+                stdin.write(&args.fibonacci_input.expect("missing fibonacci input"));
+                stdin
+            }
             _ => SP1Stdin::new(),
         };
 

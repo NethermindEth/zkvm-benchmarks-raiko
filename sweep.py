@@ -12,7 +12,7 @@ def run_benchmark(
     shard_sizes,
     block_1,
     block_2,
-    _fibonacci_inputs,
+    fibonacci_inputs,
 ):
     option_combinations = product(programs, provers, shard_sizes)  # hashfns)
     for program, prover, shard_size in option_combinations:
@@ -21,7 +21,21 @@ def run_benchmark(
             continue
 
         print(f"Running: {program} {prover} {shard_size}")
-        for _ in range(trials):
+        if program == "fibonacci":
+            for fib_input in fibonacci_inputs:
+                for _ in range(trials):
+                    cmd = [
+                        "bash",
+                        "eval.sh",
+                        "reth" if program.startswith("reth") else program,
+                        prover,
+                        str(shard_size),
+                        filename,
+                        str(fib_input),
+                    ]
+
+                    subprocess.run(cmd)
+        else:
             cmd = [
                 "bash",
                 "eval.sh",
@@ -30,13 +44,13 @@ def run_benchmark(
                 str(shard_size),
                 filename,
             ]
-
             if program == "reth1":
                 cmd.append(block_1)
             elif program == "reth2":
                 cmd.append(block_2)
 
-            subprocess.run(cmd)
+            for _ in range(trials):
+                subprocess.run(cmd)
 
 
 def main():

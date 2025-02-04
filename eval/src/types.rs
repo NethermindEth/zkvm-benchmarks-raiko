@@ -46,9 +46,9 @@ impl ProverId {
 #[derive(ValueEnum, Clone, PartialEq)]
 #[clap(rename_all = "kebab_case")]
 pub enum ProgramId {
-    // Loop,
-    // Fibonacci,
-    // Tendermint,
+    Loop,
+    Fibonacci,
+    Tendermint,
     Reth,
 }
 
@@ -56,9 +56,9 @@ impl ProgramId {
     /// Convert the identifier to a string.
     pub fn to_string(&self) -> String {
         match self {
-            // ProgramId::Loop => "loop".to_string(),
-            // ProgramId::Fibonacci => "fibonacci".to_string(),
-            // ProgramId::Tendermint => "tendermint".to_string(),
+            ProgramId::Loop => "loop".to_string(),
+            ProgramId::Fibonacci => "fibonacci".to_string(),
+            ProgramId::Tendermint => "tendermint".to_string(),
             ProgramId::Reth => "reth".to_string(),
         }
     }

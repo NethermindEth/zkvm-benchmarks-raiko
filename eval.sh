@@ -24,7 +24,7 @@ if [ "$2" == "risc0" ]; then
       RISC0_FEATURE_bigint2=1\
       RUSTUP_TOOLCHAIN=risc0 \
       CARGO_BUILD_TARGET=riscv32im-risc0-zkvm-elf \
-      cargo build --release --locked --manifest-path Cargo.toml --features $2
+      cargo build --release --ignore-rust-version --features $2
 
 fi
 # If the prover is sp1, then build the program.

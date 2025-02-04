@@ -27,7 +27,7 @@ impl Risc0Evaluator {
         let elf = fs::read(&elf_path).unwrap();
         let image_id = compute_image_id(elf.as_slice()).unwrap();
 
-        // Setup teh prover.
+        // Setup the prover.
         // If teh program is Reth or fibonacci, read the block and set it as
         // input. Otherwise, others benchmarks don't have an input.
         let env = match args.program {
@@ -39,6 +39,16 @@ impl Risc0Evaluator {
                     .build()
                     .unwrap()
             }
+            ProgramId::Fibonacci => ExecutorEnv::builder()
+                .segment_limit_po2(args.shard_size as u32)
+                .write(&args.fibonacci_input.expect("missing fibonacci input"))
+                .expect("Failed to write input to executor")
+                .build()
+                .unwrap(),
+            _ => ExecutorEnv::builder()
+                .segment_limit_po2(args.shard_size as u32)
+                .build()
+                .unwrap(),
         };
 
         // Compute some statistics.
