@@ -19,7 +19,13 @@ cd "benchmarks/$program_directory"
 if [ "$2" == "risc0" ]; then
     echo "Building Risc0"
     # Use the risc0 toolchain.
-    cargo build --release --features $2
+    CC=gcc CC_riscv32im_risc0_zkvm_elf=~/.risc0/cpp/bin/riscv32-unknown-elf-gcc\
+      RUSTFLAGS="-C passes=loweratomic -C link-arg=-Ttext=0x00200800 -C panic=abort"\
+      RISC0_FEATURE_bigint2=1\
+      RUSTUP_TOOLCHAIN=risc0 \
+      CARGO_BUILD_TARGET=riscv32im-risc0-zkvm-elf \
+      cargo build --release --locked --manifest-path Cargo.toml --features $2
+
 fi
 # If the prover is sp1, then build the program.
 if [ "$2" == "sp1" ]; then
@@ -35,12 +41,6 @@ cd ../../
 
 echo "Running eval script"
 
-# Detect whether we're on an instance with a GPU.
-if nvidia-smi > /dev/null 2>&1; then
-  GPU_EXISTS=true
-else
-  GPU_EXISTS=false
-fi
 
 # Check for AVX-512 support
 if lscpu | grep -q avx512; then
@@ -54,8 +54,8 @@ fi
 # Set the logging level.
 export RUST_LOG=info
 
-# Determine the features based on GPU existence.
-if [ "$GPU_EXISTS" = true ]; then
+# Detect whether we're on an instance with a GPU.
+if nvidia-smi > /dev/null 2>&1; then
   FEATURES="$2, cuda"
 else
   FEATURES="$2"
@@ -78,3 +78,5 @@ RISC0_INFO=1 \
     # --shard-size "$4" \
     # --filename "$5" \
     #  ${6:+$([[ "$1" == "fibonacci" ]] && echo "--fibonacci-input" || echo "--block-number") $6}
+
+  exit $?

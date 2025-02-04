@@ -23,17 +23,10 @@ pub fn get_elf(args: &EvalArgs) -> String {
         _ => panic!("prover not supported"),
     };
 
-    let elf_path = match args.prover {
-        ProverId::Risc0 => current_dir.join(format!(
-            "benchmarks/{}/target/riscv-guest/methods/{}/{}/release/{}",
-            program_dir, program_dir, target_name, program_dir
-        )),
-        ProverId::SP1 => current_dir.join(format!(
-            "benchmarks/{}/target/{}/release/{}",
-            program_dir, target_name, program_dir
-        )),
-        _ => panic!("prover not supported"),
-    };
+    let elf_path = current_dir.join(format!(
+        "benchmarks/{}/target/{}/release/{}",
+        program_dir, target_name, program_dir
+    ));
 
     let elf_path_str = elf_path
         .to_str()
