@@ -10,9 +10,10 @@ edition = "2021"
 risc0-zkvm = { version = "1.2.2", default-features = false, features = ["std", "unstable"], optional = true }
 sp1-zkvm = { version = "4.0.1", optional = true }
 valida-rs = { git = "https://github.com/lita-xyz/valida-rs.git", branch ="main", optional = true }
-
+nexus-rt = { git = "https://github.com/nexus-xyz/nexus-zkvm.git", version = "0.2.4" }
 
 [features]
 risc0 = ["dep:risc0-zkvm"]
 sp1 = ["dep:sp1-zkvm"]
 lita = ["dep:valida-rs"]
+nexus = ["dep:nexus-rt"]

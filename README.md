@@ -51,9 +51,16 @@ rustup toolchain install nightly-2024-09-30
 cargo +nightly-2024-09-30 install --git https://github.com/a16z/jolt --force --bins jolt || error_exit "Installing jolt toolchain"
 ```
 
-6. Install [Docker](https://docs.docker.com/engine/install/ubuntu/).
+6. Install the [Nexus toolchain](https://docs.nexus.xyz/zkvm/cli-quick-start)
 
-7. If using NVIDIA GPUs, install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
+``` sh
+rustup target add riscv32i-unknown-none-elf
+cargo install --git https://github.com/nexus-xyz/nexus-zkvm cargo-nexus --tag 'v0.2.4'
+```
+
+7. Install [Docker](https://docs.docker.com/engine/install/ubuntu/).
+
+8. If using NVIDIA GPUs, install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
 
 **Note:** Run one round of a small program (e.g., Fibonacci) to download the R0 docker image before benchmarking to avoid affecting benchmark times.
 

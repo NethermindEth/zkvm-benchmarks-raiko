@@ -59,6 +59,15 @@ if [ "$2" == "lita" ]; then
   exit
 fi
 
+if [ "$2" == "nexus" ]; then
+  echo "Building Nexus"
+  # Hardcode the memlimit to 8 MB
+  RUSTFLAGS="-C link-arg=--defsym=MEMORY_LIMIT=0x80000 -C link-arg=-T../../nova.x" \
+    CARGO_BUILD_TARGET=riscv32i-unknown-none-elf \
+    RUSTUP_TOOLCHAIN=1.77.0 \
+    cargo build --release --ignore-rust-version --features $2
+fi
+
 cd ../../
 
 echo "Running eval script"
@@ -108,7 +117,7 @@ RISC0_INFO=1 \
     #  ${6:+$([[ "$1" == "fibonacci" ]] && echo "--fibonacci-input" || echo "--block-number") $6}
 
 # Revert Cargo.toml as the last step
-if [ "$2" = "nexus" ] || [ "$2" = "jolt" ]; then
+if [ "$2" = "jolt" ]; then
     mv Cargo.toml.bak Cargo.toml
 fi
 

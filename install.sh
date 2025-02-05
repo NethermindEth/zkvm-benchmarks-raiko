@@ -38,4 +38,9 @@ rm -rf valida-toolchain
 rustup toolchain install nightly-2024-09-30
 cargo +nightly-2024-09-30 install --git https://github.com/a16z/jolt --force --bins jolt || error_exit "Installing jolt toolchain"
 
+# Install Nexus toolchain
+rustup target add riscv32i-unknown-none-elf
+cargo install --git https://github.com/nexus-xyz/nexus-zkvm cargo-nexus --tag 'v0.2.4' || error_exit "Installing nexus toolchain"
+cargo nexus --help || error_exit "Checking cargo nexus version"
+
 echo "All installations completed successfully."

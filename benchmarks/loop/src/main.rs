@@ -15,6 +15,7 @@
 // limitations under the License.
 
 #![no_main]
+#![cfg_attr(feature = "nexus", no_std)]
 
 #[cfg(feature = "risc0")]
 risc0_zkvm::guest::entry!(main);
@@ -28,6 +29,7 @@ valida_rs::entrypoint!(main);
 #[cfg(target_os = "zkvm")]
 use core::arch::asm;
 
+#[cfg_attr(feature = "nexus", nexus_rt::main)]
 fn main() {
     let iterations = 3000 * 1024;
     for i in 0..iterations {
