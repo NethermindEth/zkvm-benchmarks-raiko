@@ -1,0 +1,94 @@
+#[cfg(feature = "jolt")]
+use jolt_sdk::{Jolt, RV32IJoltVM, Serializable};
+
+#[cfg(feature = "jolt")]
+use fibonacci::{
+    analyze_func as analyze_fibonacci, preprocess_func as preprocess_fibonacci,
+    prove_func as prove_fibonacci,
+};
+#[cfg(feature = "jolt")]
+use loop_j::{
+    analyze_func as analyze_loop, preprocess_func as preprocess_loop, prove_func as prove_loop,
+};
+#[cfg(feature = "jolt")]
+use tendermint_j::{
+    analyze_func as analyze_tendermint, preprocess_func as preprocess_tendermint,
+    prove_func as prove_tendermint,
+};
+
+#[cfg(feature = "jolt")]
+use crate::{utils::time_operation, ProgramId};
+
+use crate::{EvalArgs, PerformanceReport};
+
+pub struct JoltEvaluator;
+
+impl JoltEvaluator {
+    #[cfg(feature = "jolt")]
+    pub fn eval(args: &EvalArgs) -> PerformanceReport {
+        let (analyze, preprocess, prove) = match args.program {
+            ProgramId::Fibonacci => {
+                let analyze =
+                    || analyze_fibonacci(args.fibonacci_input.expect("missing fibonacci input"));
+                let prove = |program, preprocessing| {
+                    prove_fibonacci(
+                        program,
+                        preprocessing,
+                        args.fibonacci_input.expect("missing fibonacci input"),
+                    )
+                };
+
+                (analyze, preprocess_fibonacci, prove)
+            }
+            ProgramId::Loop => (analyze_loop, preprocess_loop, prove_loop),
+            ProgramId::Tendermint => (analyze_tendermint, preprocess_tendermint, prove_tendermint),
+            _ => panic!("not implemented yet"),
+        };
+
+        // Get the total cycles of the program
+        let summary = analyze();
+        let instruction_count = summary.analyze::<jolt_sdk::F>();
+        let total_cycles = instruction_count
+            .iter()
+            .map(|(_, count)| count)
+            .sum::<usize>();
+
+        // Generate the program and arithmetization
+        let ((program, preprocessing), execution_duration) = time_operation(|| preprocess());
+
+        // Generate the proof
+        let ((_, proof), prove_duration) =
+            time_operation(|| prove(program.clone(), preprocessing.clone()));
+
+        // Get the proof size
+        let proof_size = proof.size().expect("failed to get proof size");
+
+        // Verify the proof
+        let (_, verify_duration) = time_operation(|| {
+            RV32IJoltVM::verify(preprocessing, proof.proof, proof.commitments, None)
+        });
+
+        PerformanceReport {
+            program: args.program.to_string(),
+            prover: args.prover.to_string(),
+            hashfn: "".to_string(),
+            shard_size: 0,
+            shards: 0,
+            cycles: total_cycles as u64,
+            speed: (total_cycles as f64) / prove_duration.as_secs_f64(),
+            execution_duration: execution_duration.as_secs_f64(),
+            prove_duration: prove_duration.as_secs_f64(),
+            core_prove_duration: prove_duration.as_secs_f64(),
+            core_verify_duration: verify_duration.as_secs_f64(),
+            core_proof_size: proof_size,
+            compress_prove_duration: 0.0,
+            compress_verify_duration: 0.0,
+            compress_proof_size: 0,
+        }
+    }
+
+    #[cfg(not(feature = "jolt"))]
+    pub fn eval(_args: &EvalArgs) -> PerformanceReport {
+        panic!("Jolt feature is not enabled. Please compile with --features jolt")
+    }
+}

@@ -1,3 +1,5 @@
+mod jolt;
+mod nexus;
 mod risc0;
 mod sp1;
 mod types;
@@ -11,6 +13,8 @@ use std::{
 use clap::Parser;
 use csv::WriterBuilder;
 use eyre::Result;
+use jolt::JoltEvaluator;
+use nexus::NexusEvaluator;
 use serde::Serialize;
 use types::{ProgramId, ProverId};
 
@@ -96,6 +100,8 @@ fn main() -> Result<()> {
     let report = match args.prover {
         ProverId::Risc0 => Risc0Evaluator::eval(&args),
         ProverId::SP1 => SP1Evaluator::eval(&args),
+        ProverId::Jolt => JoltEvaluator::eval(&args),
+        ProverId::Nexus => NexusEvaluator::eval(&args),
     };
 
     // Create the results directory if it doesn't exist.

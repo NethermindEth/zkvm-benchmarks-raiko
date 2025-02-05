@@ -5,8 +5,8 @@ use clap::ValueEnum;
 pub enum ProverId {
     Risc0,
     SP1,
-    // Jolt,
-    // Nexus,
+    Jolt,
+    Nexus,
 }
 
 impl ProverId {
@@ -15,8 +15,8 @@ impl ProverId {
         match self {
             ProverId::Risc0 => "risc0".to_string(),
             ProverId::SP1 => "sp1".to_string(),
-            // ProverId::Jolt => "jolt".to_string(),
-            // ProverId::Nexus => "nexus".to_string(),
+            ProverId::Jolt => "jolt".to_string(),
+            ProverId::Nexus => "nexus".to_string(),
         }
     }
 }

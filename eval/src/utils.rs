@@ -20,6 +20,7 @@ pub fn get_elf(args: &EvalArgs) -> String {
     let target_name = match args.prover {
         ProverId::SP1 => "riscv32im-succinct-zkvm-elf",
         ProverId::Risc0 => "riscv32im-risc0-zkvm-elf",
+        ProverId::Nexus => "riscv32i-unknown-none-elf",
         _ => panic!("prover not supported"),
     };
 
