@@ -84,6 +84,8 @@ impl JoltEvaluator {
             compress_prove_duration: 0.0,
             compress_verify_duration: 0.0,
             compress_proof_size: 0,
+            wrap_prove_duration: 0.0,
+            groth16_prove_duration: 0.0,
         }
     }
 

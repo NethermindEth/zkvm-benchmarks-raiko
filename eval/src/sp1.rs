@@ -114,6 +114,26 @@ impl SP1Evaluator {
                 .expect("Proof verification failed")
         });
 
+        #[cfg(not(feature = "cuda"))]
+        let (shrink_proof, shrink_prove_duration) =
+            time_operation(|| prover.shrink(compress_proof.clone(), opts).unwrap());
+
+        #[cfg(feature = "cuda")]
+        let (shrink_proof, shrink_prove_duration) =
+            time_operation(|| server.shrink(compress_proof.clone()).unwrap());
+
+        prover
+            .verify_shrink(&shrink_proof, &vk)
+            .expect("Proof verification failed");
+
+        #[cfg(not(feature = "cuda"))]
+        let (wrap_proof, wrap_prove_duration) =
+            time_operation(|| prover.wrap_bn254(shrink_proof.clone(), opts).unwrap());
+
+        #[cfg(feature = "cuda")]
+        let (wrap_proof, wrap_prove_duration) =
+            time_operation(|| server.wrap_bn254(shrink_proof.clone()).unwrap());
+
         let prove_duration = prove_core_duration + compress_duration;
         let core_khz = cycles as f64 / prove_core_duration.as_secs_f64() / 1_000.0;
         let overall_khz = cycles as f64 / prove_duration.as_secs_f64() / 1_000.0;
@@ -136,6 +156,8 @@ impl SP1Evaluator {
             compress_verify_duration: verify_compress_duration.as_secs_f64(),
             compress_proof_size: compress_bytes.len(),
             overall_khz,
+            wrap_prove_duration: wrap_prove_duration.as_secs_f64(),
+            groth16_prove_duration: groth16_prove_duration.as_secs_f64(),
         }
     }
 
