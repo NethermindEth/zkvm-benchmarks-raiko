@@ -27,6 +27,20 @@ impl SP1Evaluator {
         // Setup the logger.
         setup_logger();
 
+        let program = match args.program {
+            ProgramId::Reth => format!(
+                "{}_{}",
+                args.program.to_string(),
+                args.block_number.unwrap().to_string()
+            ),
+            ProgramId::Fibonacci => format!(
+                "{}_{}",
+                args.program.to_string(),
+                args.fibonacci_input.unwrap().to_string()
+            ),
+            _ => args.program.to_string(),
+        };
+
         // Set enviroment variables to configure the prover.
         std::env::set_var("SHARD_SIZE", format!("{}", 1 << args.shard_size));
         // if args.program == ProgramId::Reth {
@@ -140,7 +154,7 @@ impl SP1Evaluator {
 
         // Create the performance report.
         PerformanceReport {
-            program: args.program.to_string(),
+            program,
             prover: args.prover.to_string(),
             shard_size: args.shard_size,
             shards: num_shards,

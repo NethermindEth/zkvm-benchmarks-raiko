@@ -23,6 +23,20 @@ impl Risc0Evaluator {
         //     panic!("Only Poseidon hash function is supported for Risc0.");
         // }
 
+        let program = match args.program {
+            ProgramId::Reth => format!(
+                "{}_{}",
+                args.program.to_string(),
+                args.block_number.unwrap().to_string()
+            ),
+            ProgramId::Fibonacci => format!(
+                "{}_{}",
+                args.program.to_string(),
+                args.fibonacci_input.unwrap().to_string()
+            ),
+            _ => args.program.to_string(),
+        };
+
         let elf_path = get_elf(args);
         let elf = fs::read(&elf_path).unwrap();
         let image_id = compute_image_id(elf.as_slice()).unwrap();
@@ -112,7 +126,7 @@ impl Risc0Evaluator {
 
         // Create the performance report.
         PerformanceReport {
-            program: args.program.to_string(),
+            program,
             prover: args.prover.to_string(),
             //hashfn: args.hashfn.to_string(),
             shard_size: args.shard_size,
