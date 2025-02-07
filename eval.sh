@@ -88,6 +88,9 @@ export RUST_LOG=info
 # Detect whether we're on an instance with a GPU.
 if nvidia-smi > /dev/null 2>&1; then
   FEATURES="$2, cuda"
+  if [ "$2" = "jolt" ]; then
+    export ICICLE_BACKEND_INSTALL_DIR=$(pwd)/target/release/deps/icicle/lib/backend
+  fi
 else
   FEATURES="$2"
 fi
