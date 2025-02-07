@@ -68,10 +68,12 @@ impl JoltEvaluator {
             RV32IJoltVM::verify(preprocessing, proof.proof, proof.commitments, None)
         });
 
+        let core_khz = total_cycles as f64 / prove_duration.as_secs_f64() / 1_000.0;
+        let overall_khz = total_cycles as f64 / prove_duration.as_secs_f64() / 1_000.0;
+
         PerformanceReport {
             program: args.program.to_string(),
             prover: args.prover.to_string(),
-            hashfn: "".to_string(),
             shard_size: 0,
             shards: 0,
             cycles: total_cycles as u64,
@@ -84,6 +86,8 @@ impl JoltEvaluator {
             compress_prove_duration: 0.0,
             compress_verify_duration: 0.0,
             compress_proof_size: 0,
+            core_khz,
+            overall_khz,
             wrap_prove_duration: 0.0,
             groth16_prove_duration: 0.0,
         }
