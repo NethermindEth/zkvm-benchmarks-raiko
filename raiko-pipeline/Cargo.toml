@@ -1,0 +1,23 @@
+# This crate was taken from Raiko with minimal changes - only dependencies were adjusted to decouple from workspace.
+
+[package]
+name = "raiko-pipeline"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+[dependencies]
+cargo_metadata = "0.18.1"
+regex = "1.11.1"
+once_cell = "1.20.3"
+anyhow = { workspace = true }
+risc0-binfmt = { version = "=1.2.2", optional = true }
+pathdiff = { version = "0.2.3", optional = true }
+hex = { version = "0.4.3" }
+sp1-sdk = { workspace = true, optional = true }
+
+[features]
+risc0 = ["dep:risc0-binfmt", "dep:pathdiff"]
+sp1 = ["dep:sp1-sdk"]

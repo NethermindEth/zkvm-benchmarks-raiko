@@ -2,6 +2,9 @@
 members = [
     "block-downloader",
     "eval",
+    "raiko-pipeline",
+    "raiko-lib",
+    "benchmarks/raiko-sp1-builder"
 ]
 resolver = "2"
 
@@ -10,7 +13,10 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace.dependencies]
+raiko-lib = { path = "raiko-lib"}
+
 alloy-provider = { version = "0.3", default-features = false, features = ["reqwest", "reqwest-rustls-tls"] }
+anyhow = "1.0.95"
 bincode = "1.3.3"
 clap = { version = "4.5.3", features = ["derive"] }
 eyre = "0.6.12"
@@ -21,6 +27,23 @@ tokio = { version = "1.43.0", features = ["rt", "rt-multi-thread", "macros"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 url = "2.5.4"
+
+# SP1
+sp1-sdk = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc", features = ["cuda"] }
+sp1-prover = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
+sp1-zkvm = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
+sp1-helper = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
+sp1-cuda = {  git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
+sp1-stark = {  git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
+
+[patch.crates-io]
+# Patches needed for Taiko
+revm = { git = "https://github.com/taikoxyz/revm.git", branch = "v36-taiko" }
+revm-primitives = { git = "https://github.com/taikoxyz/revm.git", branch = "v36-taiko" }
+revm-precompile = { git = "https://github.com/taikoxyz/revm.git", branch = "v36-taiko" }
+secp256k1 = { git = "https://github.com/CeciliaZ030/rust-secp256k1", branch = "sp1-patch" }
+blst = { git = "https://github.com/CeciliaZ030/blst.git", branch = "v0.3.12-serialize" }
+alloy-serde = { git = "https://github.com/CeciliaZ030/alloy.git", branch = "v0.1.4-fix" }
 
 [profile.dev]
 opt-level = 3

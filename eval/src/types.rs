@@ -50,6 +50,7 @@ pub enum ProgramId {
     Fibonacci,
     Tendermint,
     Reth,
+    Raiko
 }
 
 impl ProgramId {
@@ -60,6 +61,7 @@ impl ProgramId {
             ProgramId::Fibonacci => "fibonacci".to_string(),
             ProgramId::Tendermint => "tendermint".to_string(),
             ProgramId::Reth => "reth".to_string(),
+            ProgramId::Raiko => "raiko".to_string(),
         }
     }
 }

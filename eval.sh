@@ -8,64 +8,78 @@ if [ "$2" = "jolt" ]; then
     cat patches/jolt.txt >> Cargo.toml
 fi
 
-# Get program directory name as $1 and append "-$2" to it if $1 is "tendermint"
-# or "reth"
-if [ "$1" = "tendermint" ] || [ "$1" = "reth" ]; then
-    program_directory="${1}-$2"
-else
-    program_directory="$1"
-fi
-
 echo "Building program"
 
-# cd to program directory computed above
-cd "benchmarks/$program_directory"
+if [ "$1" == "raiko" ]; then
+    echo "Building Raiko for prover $2"
 
-# If the prover is risc0, then build the program.
-if [ "$2" == "risc0" ]; then
-    echo "Building Risc0"
-    # Use the risc0 toolchain.
-    CC=gcc CC_riscv32im_risc0_zkvm_elf=~/.risc0/cpp/bin/riscv32-unknown-elf-gcc\
-      RUSTFLAGS="-C passes=loweratomic -C link-arg=-Ttext=0x00200800 -C panic=abort"\
-      RISC0_FEATURE_bigint2=1\
-      RUSTUP_TOOLCHAIN=risc0 \
-      CARGO_BUILD_TARGET=riscv32im-risc0-zkvm-elf \
-      cargo build --release --ignore-rust-version --features $2
-
-fi
-# If the prover is sp1, then build the program.
-if [ "$2" == "sp1" ]; then
-    # The reason we don't just use `cargo prove build` from the SP1 CLI is we need to pass a --features ...
-    # flag to select between sp1 and risc0.
-    RUSTFLAGS="-C passes=lower-atomic -C link-arg=-Ttext=0x00200800 -C panic=abort" \
+    # Run a builder inherited from Raiko itself
+    if [ "$2" == "sp1" ]; then
         RUSTUP_TOOLCHAIN=succinct \
-        CARGO_BUILD_TARGET=riscv32im-succinct-zkvm-elf \
+            cargo run --bin raiko-sp1-builder
+    else
+        echo "Prover $2 is not supported for Raiko benchmark!"
+        exit
+    fi
+else
+    # Get program directory name as $1 and append "-$2" to it if $1 is "tendermint"
+    # or "reth"
+    if [ "$1" = "tendermint" ] || [ "$1" = "reth" ]; then
+        program_directory="${1}-$2"
+    else
+        program_directory="$1"
+    fi
+
+    # cd to program directory computed above
+    cd "benchmarks/$program_directory"
+
+    # If the prover is risc0, then build the program.
+    if [ "$2" == "risc0" ]; then
+        echo "Building Risc0"
+        # Use the risc0 toolchain.
+        CC=gcc CC_riscv32im_risc0_zkvm_elf=~/.risc0/cpp/bin/riscv32-unknown-elf-gcc\
+          RUSTFLAGS="-C passes=loweratomic -C link-arg=-Ttext=0x00200800 -C panic=abort"\
+          RISC0_FEATURE_bigint2=1\
+          RUSTUP_TOOLCHAIN=risc0 \
+          CARGO_BUILD_TARGET=riscv32im-risc0-zkvm-elf \
+          cargo build --release --ignore-rust-version --features $2
+
+    fi
+
+    # If the prover is sp1, then build the program.
+    if [ "$2" == "sp1" ]; then
+        # The reason we don't just use `cargo prove build` from the SP1 CLI is we need to pass a --features ...
+        # flag to select between sp1 and risc0.
+        RUSTFLAGS="-C passes=lower-atomic -C link-arg=-Ttext=0x00200800 -C panic=abort" \
+            RUSTUP_TOOLCHAIN=succinct \
+            CARGO_BUILD_TARGET=riscv32im-succinct-zkvm-elf \
+            cargo build --release --ignore-rust-version --features $2
+    fi
+
+    if [ "$2" == "lita" ]; then
+      echo "Building Lita"
+      # Use the lita toolchain.
+      CC_valida_unknown_baremetal_gnu="/valida-toolchain/bin/clang" \
+        CFLAGS_valida_unknown_baremetal_gnu="--sysroot=/valida-toolchain -isystem /valida-toolchain/include" \
+        RUSTUP_TOOLCHAIN=valida \
+        CARGO_BUILD_TARGET=valida-unknown-baremetal-gnu \
         cargo build --release --ignore-rust-version --features $2
-fi
 
-if [ "$2" == "lita" ]; then
-  echo "Building Lita"
-  # Use the lita toolchain.
-  CC_valida_unknown_baremetal_gnu="/valida-toolchain/bin/clang" \
-    CFLAGS_valida_unknown_baremetal_gnu="--sysroot=/valida-toolchain -isystem /valida-toolchain/include" \
-    RUSTUP_TOOLCHAIN=valida \
-    CARGO_BUILD_TARGET=valida-unknown-baremetal-gnu \
-    cargo build --release --ignore-rust-version --features $2
+      # Lita does not have any hardware acceleration. Also it does not have an SDK
+      # or a crate to be used on rust. We need to benchmark it without rust
+      cd ../../
+      ./eval_lita.sh $1 $2 $3 $program_directory $6
+      exit
+    fi
 
-  # Lita does not have any hardware acceleration. Also it does not have an SDK
-  # or a crate to be used on rust. We need to benchmark it without rust
-  cd ../../
-  ./eval_lita.sh $1 $2 $3 $program_directory $6
-  exit
-fi
-
-if [ "$2" == "nexus" ]; then
-  echo "Building Nexus"
-  # Hardcode the memlimit to 8 MB
-  RUSTFLAGS="-C link-arg=--defsym=MEMORY_LIMIT=0x80000 -C link-arg=-T../../nova.x" \
-    CARGO_BUILD_TARGET=riscv32i-unknown-none-elf \
-    RUSTUP_TOOLCHAIN=1.77.0 \
-    cargo build --release --ignore-rust-version --features $2
+    if [ "$2" == "nexus" ]; then
+      echo "Building Nexus"
+      # Hardcode the memlimit to 8 MB
+      RUSTFLAGS="-C link-arg=--defsym=MEMORY_LIMIT=0x80000 -C link-arg=-T../../nova.x" \
+        CARGO_BUILD_TARGET=riscv32i-unknown-none-elf \
+        RUSTUP_TOOLCHAIN=1.77.0 \
+        cargo build --release --ignore-rust-version --features $2
+    fi
 fi
 
 cd ../../
@@ -110,7 +124,7 @@ RISC0_INFO=1 \
     --prover "$2" \
     --shard-size "$3" \
     --filename "$4" \
-     ${5:+$([[ "$1" == "fibonacci" ]] && echo "--fibonacci-input" || echo "--block-number") $5}
+    ${5:+$([[ "$1" == "fibonacci" ]] && echo "--fibonacci-input" || echo "--block-number") $5}
     # --hashfn "$3" \
     # --shard-size "$4" \
     # --filename "$5" \
