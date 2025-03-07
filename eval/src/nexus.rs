@@ -66,6 +66,8 @@ impl NexusEvaluator {
             compress_prove_duration: 0.0,
             wrap_prove_duration: 0.0,
             groth16_prove_duration: 0.0,
+            shrink_prove_duration: 0.0,
+            wrap_prove_duration: 0.0,
         }
     }
 

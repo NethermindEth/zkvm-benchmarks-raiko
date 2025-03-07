@@ -47,8 +47,6 @@ pub struct PerformanceReport {
     pub program: String,
     /// The prover that is being evaluated.
     pub prover: String,
-    // /// The hash function that is being evaluated.
-    // pub hashfn: String,
     /// The shard size that is being evaluated.
     pub shard_size: u64,
     /// The number of shards.
@@ -83,6 +81,8 @@ pub struct PerformanceReport {
     pub wrap_prove_duration: f64,
     /// The reported duration of the groth16 proving time in seconds.
     pub groth16_prove_duration: f64,
+    /// The reported duration of the shrink proving time in seconds.
+    pub shrink_prove_duration: f64,
 }
 
 fn main() -> Result<()> {

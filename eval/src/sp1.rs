@@ -2,7 +2,10 @@
 use std::fs;
 
 #[cfg(feature = "sp1")]
-use sp1_prover::{components::CpuProverComponents, utils::get_cycles};
+use sp1_prover::{
+    build::try_build_groth16_bn254_artifacts_dev, components::CpuProverComponents,
+    utils::get_cycles,
+};
 #[cfg(feature = "sp1")]
 use sp1_sdk::{setup_logger, SP1Context, SP1Prover, SP1Stdin};
 #[cfg(all(feature = "sp1", not(feature = "cuda")))]
@@ -27,7 +30,7 @@ impl SP1Evaluator {
         // Setup the logger.
         setup_logger();
 
-        let program = match args.program {
+        let program_name = match args.program {
             ProgramId::Reth => format!(
                 "{}_{}",
                 args.program.to_string(),
@@ -148,13 +151,22 @@ impl SP1Evaluator {
         let (wrap_proof, wrap_prove_duration) =
             time_operation(|| server.wrap_bn254(shrink_proof.clone()).unwrap());
 
+        let artifacts_dir =
+            try_build_groth16_bn254_artifacts_dev(&wrap_proof.vk, &wrap_proof.proof);
+
+        // Warm up the prover.
+        prover.wrap_groth16_bn254(wrap_proof.clone(), &artifacts_dir);
+
+        let (groth16_proof, groth16_duration) =
+            time_operation(|| prover.wrap_groth16_bn254(wrap_proof, &artifacts_dir));
+
         let prove_duration = prove_core_duration + compress_duration;
         let core_khz = cycles as f64 / prove_core_duration.as_secs_f64() / 1_000.0;
         let overall_khz = cycles as f64 / prove_duration.as_secs_f64() / 1_000.0;
 
         // Create the performance report.
         PerformanceReport {
-            program,
+            program: program_name,
             prover: args.prover.to_string(),
             shard_size: args.shard_size,
             shards: num_shards,
@@ -171,7 +183,9 @@ impl SP1Evaluator {
             compress_proof_size: compress_bytes.len(),
             overall_khz,
             wrap_prove_duration: wrap_prove_duration.as_secs_f64(),
-            groth16_prove_duration: groth16_prove_duration.as_secs_f64(),
+            groth16_prove_duration: groth16_duration.as_secs_f64(),
+            shrink_prove_duration.as_secs_f64(),
+            wrap_prove_duration.as_secs_f64()
         }
     }
 

@@ -42,7 +42,7 @@ impl Risc0Evaluator {
         let image_id = compute_image_id(elf.as_slice()).unwrap();
 
         // Setup the prover.
-        // If teh program is Reth or fibonacci, read the block and set it as
+        // If the program is Reth or fibonacci, read the block and set it as
         // input. Otherwise, others benchmarks don't have an input.
         let env = match args.program {
             ProgramId::Reth => {
@@ -105,17 +105,18 @@ impl Risc0Evaluator {
 
         // GROTH 16 conversion
         // Bn254 wrapping duration
+
         let (bn254_proof, wrap_prove_duration) = time_operation(|| {
             prover
                 .identity_p254(&compressed_proof.inner.succinct().unwrap())
                 .unwrap()
         });
         let seal_bytes = bn254_proof.get_seal_bytes();
-        println!("Running groth16 wrapper");
+        tracing::info!("Running groth16 wrapper");
         let (_, groth16_prove_duration) =
             time_operation(|| risc0_zkvm::stark_to_snark(&seal_bytes).unwrap());
 
-        println!("Done running groth16");
+        tracing::info!("Done running groth16");
 
         // Get the recursive proof size.
         let recursive_proof_size = succinct_receipt.seal.len() * 4;
@@ -145,6 +146,7 @@ impl Risc0Evaluator {
             overall_khz,
             wrap_prove_duration: wrap_prove_duration.as_secs_f64(),
             groth16_prove_duration: groth16_prove_duration.as_secs_f64(),
+            shrink_prove_duration: 0.0,
         }
     }
 
