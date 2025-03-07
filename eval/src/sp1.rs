@@ -157,7 +157,7 @@ impl SP1Evaluator {
         // Warm up the prover.
         prover.wrap_groth16_bn254(wrap_proof.clone(), &artifacts_dir);
 
-        let (groth16_proof, groth16_duration) =
+        let (_groth16_proof, groth16_duration) =
             time_operation(|| prover.wrap_groth16_bn254(wrap_proof, &artifacts_dir));
 
         let prove_duration = prove_core_duration + compress_duration;
@@ -184,8 +184,7 @@ impl SP1Evaluator {
             overall_khz,
             wrap_prove_duration: wrap_prove_duration.as_secs_f64(),
             groth16_prove_duration: groth16_duration.as_secs_f64(),
-            shrink_prove_duration.as_secs_f64(),
-            wrap_prove_duration.as_secs_f64()
+            shrink_prove_duration: shrink_prove_duration.as_secs_f64(),
         }
     }
 
