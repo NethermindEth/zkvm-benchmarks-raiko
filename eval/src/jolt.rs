@@ -1,5 +1,7 @@
 #[cfg(feature = "jolt")]
-use jolt_sdk::{Jolt, RV32IJoltVM, Serializable};
+use jolt_sdk::{
+    host::Program, Jolt, JoltHyperKZGProof, JoltPreprocessing, RV32IJoltVM, Serializable,
+};
 
 #[cfg(feature = "jolt")]
 use fibonacci::{
@@ -26,22 +28,35 @@ pub struct JoltEvaluator;
 impl JoltEvaluator {
     #[cfg(feature = "jolt")]
     pub fn eval(args: &EvalArgs) -> PerformanceReport {
-        let (analyze, preprocess, prove) = match args.program {
+        let (analyze, preprocess, prove): (
+            Box<dyn Fn() -> _>,
+            fn() -> (Program, JoltPreprocessing<4, _, _, _>),
+            Box<dyn Fn(Program, JoltPreprocessing<4, _, _, _>) -> ((), JoltHyperKZGProof)>,
+        ) = match args.program {
             ProgramId::Fibonacci => {
-                let analyze =
-                    || analyze_fibonacci(args.fibonacci_input.expect("missing fibonacci input"));
-                let prove = |program, preprocessing| {
+                let analyze = Box::new(|| {
+                    analyze_fibonacci(args.fibonacci_input.expect("missing fibonacci input"))
+                });
+                let prove = Box::new(|program, preprocessing| {
                     prove_fibonacci(
                         program,
                         preprocessing,
                         args.fibonacci_input.expect("missing fibonacci input"),
                     )
-                };
-
+                });
                 (analyze, preprocess_fibonacci, prove)
             }
-            ProgramId::Loop => (analyze_loop, preprocess_loop, prove_loop),
-            ProgramId::Tendermint => (analyze_tendermint, preprocess_tendermint, prove_tendermint),
+            ProgramId::Loop => {
+                let analyze = Box::new(|| analyze_loop());
+                let prove = Box::new(|program, preprocessing| prove_loop(program, preprocessing));
+                (analyze, preprocess_loop, prove)
+            }
+            ProgramId::Tendermint => {
+                let analyze = Box::new(|| analyze_tendermint());
+                let prove =
+                    Box::new(|program, preprocessing| prove_tendermint(program, preprocessing));
+                (analyze, preprocess_tendermint, prove)
+            }
             _ => panic!("not implemented yet"),
         };
 
