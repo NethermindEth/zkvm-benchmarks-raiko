@@ -2,6 +2,30 @@
 set -e
 echo "Running $1, $2, $3, $4, $5"
 
+# Function to check rust version and determine correct parameter name
+check_rust_version() {
+    local toolchain=$1
+    local version_output
+
+    if [ -z "$toolchain" ]; then
+        version_output=$(rustc --version)
+    else
+        version_output=$(rustc +$toolchain --version)
+    fi
+
+    # Extract version number
+    local version=$(echo "$version_output" | sed -E 's/rustc ([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+    local major=$(echo "$version" | cut -d. -f1)
+    local minor=$(echo "$version" | cut -d. -f2)
+
+    # Compare version with 1.81
+    if [ "$major" -gt 1 ] || ([ "$major" -eq 1 ] && [ "$minor" -ge 81 ]); then
+        echo "lower-atomic"  # New parameter name for Rust >= 1.81
+    else
+        echo "loweratomic"   # Old parameter name for Rust < 1.81
+    fi
+}
+
 # If $2 == jolt, append precompiles to Cargo.toml
 if [ "$2" = "jolt" ]; then
     cp Cargo.toml Cargo.toml.bak
@@ -25,8 +49,9 @@ cd "benchmarks/$program_directory"
 if [ "$2" == "risc0" ]; then
     echo "Building Risc0"
     # Use the risc0 toolchain.
+    ATOMIC_PARAM=$(check_rust_version "risc0")
     CC=gcc CC_riscv32im_risc0_zkvm_elf=~/.risc0/cpp/bin/riscv32-unknown-elf-gcc\
-      RUSTFLAGS="-C passes=loweratomic -C link-arg=-Ttext=0x00200800 -C panic=abort"\
+      RUSTFLAGS="-C passes=$ATOMIC_PARAM -C link-arg=-Ttext=0x00200800 -C panic=abort"\
       RISC0_FEATURE_bigint2=1\
       RUSTUP_TOOLCHAIN=risc0 \
       CARGO_BUILD_TARGET=riscv32im-risc0-zkvm-elf \
@@ -37,7 +62,8 @@ fi
 if [ "$2" == "sp1" ]; then
     # The reason we don't just use `cargo prove build` from the SP1 CLI is we need to pass a --features ...
     # flag to select between sp1 and risc0.
-    RUSTFLAGS="-C passes=lower-atomic -C link-arg=-Ttext=0x00200800 -C panic=abort" \
+    ATOMIC_PARAM=$(check_rust_version "succinct")
+    RUSTFLAGS="-C passes=$ATOMIC_PARAM -C link-arg=-Ttext=0x00200800 -C panic=abort" \
         RUSTUP_TOOLCHAIN=succinct \
         CARGO_BUILD_TARGET=riscv32im-succinct-zkvm-elf \
         cargo build --release --ignore-rust-version --features $2
