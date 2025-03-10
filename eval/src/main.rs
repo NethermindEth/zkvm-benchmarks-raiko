@@ -2,8 +2,6 @@ mod jolt;
 mod nexus;
 mod risc0;
 mod sp1;
-#[cfg(feature = "sp1")]
-mod sp1_taiko;
 mod types;
 mod utils;
 
