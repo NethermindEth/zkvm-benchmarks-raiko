@@ -64,7 +64,7 @@ async fn main() -> RaikoResult<()> {
         .unwrap();
 
     // Create blocks directory in eval if it doesn't exist
-    let blocks_dir = PathBuf::from(format!("eval/taiko-blocks-{taiko_network}"));
+    let blocks_dir = PathBuf::from(format!("eval/blocks-taiko_{taiko_network}"));
     fs::create_dir_all(&blocks_dir)?;
 
     for block_number in args.block_numbers {
