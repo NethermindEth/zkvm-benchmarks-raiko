@@ -49,8 +49,6 @@ pub struct PerformanceReport {
     pub program: String,
     /// The prover that is being evaluated.
     pub prover: String,
-    // /// The hash function that is being evaluated.
-    // pub hashfn: String,
     /// The shard size that is being evaluated.
     pub shard_size: u64,
     /// The number of shards.
@@ -81,6 +79,12 @@ pub struct PerformanceReport {
     pub core_khz: f64,
     /// The overall speed in KHz.
     pub overall_khz: f64,
+    /// The reported duration of the wrap proving time in seconds.
+    pub wrap_prove_duration: f64,
+    /// The reported duration of the groth16 proving time in seconds.
+    pub groth16_prove_duration: f64,
+    /// The reported duration of the shrink proving time in seconds.
+    pub shrink_prove_duration: f64,
 }
 
 fn main() -> Result<()> {
@@ -139,6 +143,8 @@ fn main() -> Result<()> {
             "compress_proof_size",
             "core_khz",
             "overall_khz",
+            "wrap_prove_duration",
+            "groth16_prove_duration",
         ])?;
     }
     writer.serialize(&[
@@ -159,6 +165,8 @@ fn main() -> Result<()> {
         report.compress_proof_size.to_string(),
         report.core_khz.to_string(),
         report.overall_khz.to_string(),
+        report.wrap_prove_duration.to_string(),
+        report.groth16_prove_duration.to_string(),
     ])?;
     writer.flush()?;
 

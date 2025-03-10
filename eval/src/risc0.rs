@@ -23,12 +23,26 @@ impl Risc0Evaluator {
         //     panic!("Only Poseidon hash function is supported for Risc0.");
         // }
 
+        let program = match args.program {
+            ProgramId::Reth => format!(
+                "{}_{}",
+                args.program.to_string(),
+                args.block_number.unwrap().to_string()
+            ),
+            ProgramId::Fibonacci => format!(
+                "{}_{}",
+                args.program.to_string(),
+                args.fibonacci_input.unwrap().to_string()
+            ),
+            _ => args.program.to_string(),
+        };
+
         let elf_path = get_elf(args);
         let elf = fs::read(&elf_path).unwrap();
         let image_id = compute_image_id(elf.as_slice()).unwrap();
 
         // Setup the prover.
-        // If teh program is Reth or fibonacci, read the block and set it as
+        // If the program is Reth or fibonacci, read the block and set it as
         // input. Otherwise, others benchmarks don't have an input.
         let env = match args.program {
             ProgramId::Reth => {
@@ -89,6 +103,21 @@ impl Risc0Evaluator {
 
         let succinct_receipt = compressed_proof.inner.succinct().unwrap();
 
+        // GROTH 16 conversion
+        // Bn254 wrapping duration
+
+        let (bn254_proof, wrap_prove_duration) = time_operation(|| {
+            prover
+                .identity_p254(&compressed_proof.inner.succinct().unwrap())
+                .unwrap()
+        });
+        let seal_bytes = bn254_proof.get_seal_bytes();
+        tracing::info!("Running groth16 wrapper");
+        let (_, groth16_prove_duration) =
+            time_operation(|| risc0_zkvm::stark_to_snark(&seal_bytes).unwrap());
+
+        tracing::info!("Done running groth16");
+
         // Get the recursive proof size.
         let recursive_proof_size = succinct_receipt.seal.len() * 4;
         let prove_duration = core_prove_duration + compress_duration;
@@ -98,7 +127,7 @@ impl Risc0Evaluator {
 
         // Create the performance report.
         PerformanceReport {
-            program: args.program.to_string(),
+            program,
             prover: args.prover.to_string(),
             //hashfn: args.hashfn.to_string(),
             shard_size: args.shard_size,
@@ -115,6 +144,9 @@ impl Risc0Evaluator {
             compress_proof_size: recursive_proof_size,
             core_khz,
             overall_khz,
+            wrap_prove_duration: wrap_prove_duration.as_secs_f64(),
+            groth16_prove_duration: groth16_prove_duration.as_secs_f64(),
+            shrink_prove_duration: 0.0,
         }
     }
 
