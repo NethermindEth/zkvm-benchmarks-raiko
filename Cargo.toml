@@ -2,10 +2,8 @@
 members = [
     "block-downloader",
     "eval",
-    "raiko-pipeline",
     "raiko-lib",
     "raiko-block-downloader",
-    "benchmarks/raiko-sp1-builder"
 ]
 resolver = "2"
 
