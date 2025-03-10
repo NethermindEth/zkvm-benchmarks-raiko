@@ -2877,6 +2877,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ctrlc"
+version = "3.4.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "90eeab0aa92f3f9b4e87f258c72b139c207d251f9cbc1080a0086b86a8870dd3"
+dependencies = [
+ "nix 0.29.0",
+ "windows-sys 0.59.0",
+]
+
+[[package]]
 name = "cuckoofilter"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5676,6 +5686,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "nix"
+version = "0.29.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "71e2746dc3a24dd78b3cfcb7be93368c6de9963d30f43a6a73998a9cf4b17b46"
+dependencies = [
+ "bitflags 2.8.0",
+ "cfg-if",
+ "cfg_aliases",
+ "libc",
+]
+
+[[package]]
 name = "nohash-hasher"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6644,7 +6666,7 @@ dependencies = [
  "findshlibs",
  "libc",
  "log",
- "nix",
+ "nix 0.26.4",
  "once_cell",
  "parking_lot 0.12.3",
  "prost 0.12.6",
@@ -9937,8 +9959,9 @@ dependencies = [
 
 [[package]]
 name = "sp1-build"
-version = "4.0.1"
-source = "git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc#717c67df97b513dfb56a7df0ec47f53c45449b9d"
+version = "4.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "02fecdd110076b783d6e2954069862cc2446d21fb1b9ad4f6f52f438cbe5abc3"
 dependencies = [
  "anyhow",
  "cargo_metadata",
@@ -9950,7 +9973,8 @@ dependencies = [
 [[package]]
 name = "sp1-core-executor"
 version = "4.0.1"
-source = "git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc#717c67df97b513dfb56a7df0ec47f53c45449b9d"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bb8ec5621fba6c50f6ec4e0e963227d1ab2229840b0e210a57e1f18428bbcbc8"
 dependencies = [
  "bincode",
  "bytemuck",
@@ -9973,7 +9997,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sp1-curves",
- "sp1-primitives 4.0.1 (git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc)",
+ "sp1-primitives",
  "sp1-stark",
  "strum 0.26.3",
  "strum_macros 0.26.4",
@@ -9988,7 +10012,8 @@ dependencies = [
 [[package]]
 name = "sp1-core-machine"
 version = "4.0.1"
-source = "git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc#717c67df97b513dfb56a7df0ec47f53c45449b9d"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fe96b1962e6c10ac8321c9ea16161467ca27b43a75c02f42c82310d5e05768f5"
 dependencies = [
  "bincode",
  "cbindgen",
@@ -10027,7 +10052,7 @@ dependencies = [
  "sp1-core-executor",
  "sp1-curves",
  "sp1-derive",
- "sp1-primitives 4.0.1 (git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc)",
+ "sp1-primitives",
  "sp1-stark",
  "static_assertions",
  "strum 0.26.3",
@@ -10044,9 +10069,11 @@ dependencies = [
 [[package]]
 name = "sp1-cuda"
 version = "4.0.1"
-source = "git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc#717c67df97b513dfb56a7df0ec47f53c45449b9d"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d2a78f87a3606de46272d2a153408768bf9b1897a37e231aa084425977fe8532"
 dependencies = [
  "bincode",
+ "ctrlc",
  "prost 0.13.4",
  "serde",
  "sp1-core-machine",
@@ -10059,7 +10086,8 @@ dependencies = [
 [[package]]
 name = "sp1-curves"
 version = "4.0.1"
-source = "git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc#717c67df97b513dfb56a7df0ec47f53c45449b9d"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1849790f9a7b713fea00a0ec0ccfca13f2cea86249c33d38851c8ee75e0d8d78"
 dependencies = [
  "cfg-if",
  "dashu",
@@ -10072,15 +10100,16 @@ dependencies = [
  "p3-field",
  "serde",
  "snowbridge-amcl",
- "sp1-primitives 4.0.1 (git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc)",
+ "sp1-primitives",
  "sp1-stark",
  "typenum",
 ]
 
 [[package]]
 name = "sp1-derive"
-version = "4.0.1"
-source = "git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc#717c67df97b513dfb56a7df0ec47f53c45449b9d"
+version = "4.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6904621bc0e99732b4a656c2fbeae873ce426aedb947cd0022aaa0359cd944af"
 dependencies = [
  "quote",
  "syn 1.0.109",
@@ -10094,7 +10123,7 @@ checksum = "aac3d3deeed25e9cad80e4275faf5954aa63f213ed3422f0e098dd2d0c1b0c0e"
 dependencies = [
  "bincode",
  "serde",
- "sp1-primitives 4.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sp1-primitives",
 ]
 
 [[package]]
@@ -10116,26 +10145,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "sp1-primitives"
-version = "4.0.1"
-source = "git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc#717c67df97b513dfb56a7df0ec47f53c45449b9d"
-dependencies = [
- "bincode",
- "hex",
- "lazy_static",
- "num-bigint 0.4.6",
- "p3-baby-bear",
- "p3-field",
- "p3-poseidon2",
- "p3-symmetric",
- "serde",
- "sha2 0.10.8",
-]
-
-[[package]]
 name = "sp1-prover"
 version = "4.0.1"
-source = "git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc#717c67df97b513dfb56a7df0ec47f53c45449b9d"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "40d5713392e803b1e609d626256015ddb5464e2f435fc55fa8f383bae111a4af"
 dependencies = [
  "anyhow",
  "bincode",
@@ -10162,7 +10175,7 @@ dependencies = [
  "sha2 0.10.8",
  "sp1-core-executor",
  "sp1-core-machine",
- "sp1-primitives 4.0.1 (git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc)",
+ "sp1-primitives",
  "sp1-recursion-circuit",
  "sp1-recursion-compiler",
  "sp1-recursion-core",
@@ -10177,7 +10190,8 @@ dependencies = [
 [[package]]
 name = "sp1-recursion-circuit"
 version = "4.0.1"
-source = "git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc#717c67df97b513dfb56a7df0ec47f53c45449b9d"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bbe6fcf68661a7253c9b7bf253b35c40a641b25d09048c5ac2c549e320428cd5"
 dependencies = [
  "hashbrown 0.14.5",
  "itertools 0.13.0",
@@ -10199,7 +10213,7 @@ dependencies = [
  "sp1-core-executor",
  "sp1-core-machine",
  "sp1-derive",
- "sp1-primitives 4.0.1 (git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc)",
+ "sp1-primitives",
  "sp1-recursion-compiler",
  "sp1-recursion-core",
  "sp1-recursion-gnark-ffi",
@@ -10210,7 +10224,8 @@ dependencies = [
 [[package]]
 name = "sp1-recursion-compiler"
 version = "4.0.1"
-source = "git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc#717c67df97b513dfb56a7df0ec47f53c45449b9d"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5efb23c5b5266e07debb0a0d9a0cc4dcc03b646937a80a7b73d4696ccc9a7152"
 dependencies = [
  "backtrace",
  "itertools 0.13.0",
@@ -10220,7 +10235,7 @@ dependencies = [
  "p3-symmetric",
  "serde",
  "sp1-core-machine",
- "sp1-primitives 4.0.1 (git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc)",
+ "sp1-primitives",
  "sp1-recursion-core",
  "sp1-recursion-derive",
  "sp1-stark",
@@ -10231,7 +10246,8 @@ dependencies = [
 [[package]]
 name = "sp1-recursion-core"
 version = "4.0.1"
-source = "git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc#717c67df97b513dfb56a7df0ec47f53c45449b9d"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2267c384a2106cb5b3235a8b02fa5d91db30c1bfead653f6181d1a17f91c70b2"
 dependencies = [
  "backtrace",
  "cbindgen",
@@ -10261,7 +10277,7 @@ dependencies = [
  "serde",
  "sp1-core-machine",
  "sp1-derive",
- "sp1-primitives 4.0.1 (git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc)",
+ "sp1-primitives",
  "sp1-stark",
  "static_assertions",
  "thiserror 1.0.69",
@@ -10272,8 +10288,9 @@ dependencies = [
 
 [[package]]
 name = "sp1-recursion-derive"
-version = "4.0.1"
-source = "git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc#717c67df97b513dfb56a7df0ec47f53c45449b9d"
+version = "4.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c03f60e1f443c82cf7b08d01159e959a865fbe3553b7b0ebc336288e4b049b8d"
 dependencies = [
  "quote",
  "syn 1.0.109",
@@ -10282,7 +10299,8 @@ dependencies = [
 [[package]]
 name = "sp1-recursion-gnark-ffi"
 version = "4.0.1"
-source = "git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc#717c67df97b513dfb56a7df0ec47f53c45449b9d"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b39cc97057e5240a2ab3062234a60d6ee6dbdb852ef02ea5fe5f943f910f6c9e"
 dependencies = [
  "anyhow",
  "bincode",
@@ -10307,7 +10325,8 @@ dependencies = [
 [[package]]
 name = "sp1-sdk"
 version = "4.0.1"
-source = "git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc#717c67df97b513dfb56a7df0ec47f53c45449b9d"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a6d0773e4cc5f8c2dfea65cbf003d6d6c8fb8f2671d3edb48b5873627f27d20"
 dependencies = [
  "alloy-primitives 0.8.19",
  "alloy-signer 0.8.3",
@@ -10337,7 +10356,7 @@ dependencies = [
  "sp1-core-executor",
  "sp1-core-machine",
  "sp1-cuda",
- "sp1-primitives 4.0.1 (git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc)",
+ "sp1-primitives",
  "sp1-prover",
  "sp1-stark",
  "strum 0.26.3",
@@ -10354,7 +10373,8 @@ dependencies = [
 [[package]]
 name = "sp1-stark"
 version = "4.0.1"
-source = "git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc#717c67df97b513dfb56a7df0ec47f53c45449b9d"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "274d0cddd1804a447daaf29deeb2ce46a5c808c626261daf710da8b90bb25f99"
 dependencies = [
  "arrayref",
  "hashbrown 0.14.5",
@@ -10378,7 +10398,7 @@ dependencies = [
  "rayon-scan",
  "serde",
  "sp1-derive",
- "sp1-primitives 4.0.1 (git+https://github.com/NethermindEth/sp1.git?branch=v4.0.1-no-ctrlc)",
+ "sp1-primitives",
  "strum 0.26.3",
  "strum_macros 0.26.4",
  "sysinfo",

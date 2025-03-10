@@ -48,14 +48,6 @@ alloy-provider = { version = "0.3", default-features = false, features = [
     "reqwest-rustls-tls"
 ] }
 
-# SP1
-sp1-sdk = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc", features = ["cuda"] }
-sp1-prover = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
-sp1-zkvm = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
-sp1-helper = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
-sp1-cuda = {  git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
-sp1-stark = {  git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
-
 # Raiko: Reth
 reth-primitives = { git = "https://github.com/taikoxyz/taiko-reth.git", branch = "v1.0.0-rc.2-taiko", default-features = false, features = [
     "alloy-compat",
