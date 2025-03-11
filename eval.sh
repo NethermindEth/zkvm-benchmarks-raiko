@@ -19,7 +19,7 @@ check_rust_version() {
     local minor=$(echo "$version" | cut -d. -f2)
 
     # Compare version with 1.81
-    if [ "$major" -gt 1 ] || ([ "$major" -eq 1 ] && [ "$minor" -g 81 ]); then
+    if [ "$major" -gt 1 ] || ([ "$major" -eq 1 ] && [ "$minor" -gt 81 ]); then
         echo "lower-atomic"  # New parameter name for Rust >= 1.81
     else
         echo "loweratomic"   # Old parameter name for Rust < 1.81

@@ -115,57 +115,23 @@ fn main() -> Result<()> {
     // Create the file
     let filename = format!("{}_{}.csv", args.filename, env!("VERGEN_GIT_SHA"));
     let path = results_dir.join(filename);
+
+    // Check if file exists and get its size
+    let file_exists = path.exists();
+
+    // Create a CSV writer with appropriate configuration
     let file = OpenOptions::new()
         .create(true)
-        .append(true)
+        .write(true)
+        .append(file_exists) // Only append if file exists
         .open(path.clone())?;
 
-    // Write the row and the header if needed.
-    let mut writer = WriterBuilder::new().from_writer(&file);
-    if file.metadata()?.len() == 0 {
-        writer.write_record(&[
-            "program",
-            "prover",
-            //"hashfn",
-            "shard_size",
-            "shards",
-            "cycles",
-            "speed",
-            "execution_duration",
-            "prove_duration",
-            "core_prove_duration",
-            "core_verify_duration",
-            "core_proof_size",
-            "compress_prove_duration",
-            "compress_verify_duration",
-            "compress_proof_size",
-            "core_khz",
-            "overall_khz",
-            "wrap_prove_duration",
-            "groth16_prove_duration",
-        ])?;
-    }
-    writer.serialize(&[
-        report.program,
-        report.prover,
-        //report.hashfn,
-        report.shard_size.to_string(),
-        report.shards.to_string(),
-        report.cycles.to_string(),
-        report.speed.to_string(),
-        report.execution_duration.to_string(),
-        report.prove_duration.to_string(),
-        report.core_prove_duration.to_string(),
-        report.core_verify_duration.to_string(),
-        report.core_proof_size.to_string(),
-        report.compress_prove_duration.to_string(),
-        report.compress_verify_duration.to_string(),
-        report.compress_proof_size.to_string(),
-        report.core_khz.to_string(),
-        report.overall_khz.to_string(),
-        report.wrap_prove_duration.to_string(),
-        report.groth16_prove_duration.to_string(),
-    ])?;
+    let mut writer = WriterBuilder::new()
+        .has_headers(!file_exists) // Write headers only for new files
+        .from_writer(file);
+
+    // Serialize the report - headers will be written automatically for new files
+    writer.serialize(&report)?;
     writer.flush()?;
 
     let latest_filename = format!("{}_latest.csv", args.filename);
