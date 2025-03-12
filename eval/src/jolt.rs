@@ -104,8 +104,9 @@ impl JoltEvaluator {
             core_khz,
             overall_khz,
             wrap_prove_duration: 0.0,
-            groth16_prove_duration: 0.0,
             shrink_prove_duration: 0.0,
+            groth16_prove_duration: 0.0,
+            plonk_prove_duration: 0.0,
         }
     }
 

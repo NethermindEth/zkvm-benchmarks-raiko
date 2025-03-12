@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
-echo "Running $1, $2, $3, $4, $5"
+echo "Running $1, $2, $3, $4, $5, $6"
+
+PROGRAM=$1;
+PROVER=$2;
+SHARD_SIZE=$3;
+FILENAME=$4;
+ADDED_ARGS=$5;
+BLOCKS_DIR_SUFFIX=$6;
 
 # Function to check rust version and determine correct parameter name
 check_rust_version() {
@@ -19,82 +26,96 @@ check_rust_version() {
     local minor=$(echo "$version" | cut -d. -f2)
 
     # Compare version with 1.81
-    if [ "$major" -gt 1 ] || ([ "$major" -eq 1 ] && [ "$minor" -gt 81 ]); then
+    if [ "$major" -gt 1 ] || ([ "$major" -eq 1 ] && [ "$minor" -g 81 ]); then
         echo "lower-atomic"  # New parameter name for Rust >= 1.81
     else
         echo "loweratomic"   # Old parameter name for Rust < 1.81
     fi
 }
 
-# If $2 == jolt, append precompiles to Cargo.toml
-if [ "$2" = "jolt" ]; then
+# If $PROVER == jolt, append precompiles to Cargo.toml
+if [ "$PROVER" = "jolt" ]; then
     cp Cargo.toml Cargo.toml.bak
     cat patches/jolt.txt >> Cargo.toml
 fi
 
-# Get program directory name as $1 and append "-$2" to it if $1 is "tendermint"
-# or "reth"
-if [ "$1" = "tendermint" ] || [ "$1" = "reth" ]; then
-    program_directory="${1}-$2"
-else
-    program_directory="$1"
-fi
-
 echo "Building program"
 
-# cd to program directory computed above
-cd "benchmarks/$program_directory"
+if [ "$PROGRAM" == "raiko" ]; then
+    echo "Building Raiko for prover $PROVER"
 
-# If the prover is risc0, then build the program.
-if [ "$2" == "risc0" ]; then
-    echo "Building Risc0"
-    # Use the risc0 toolchain.
-    ATOMIC_PARAM=$(check_rust_version "risc0")
-    CC=gcc CC_riscv32im_risc0_zkvm_elf=~/.risc0/cpp/bin/riscv32-unknown-elf-gcc\
-      RUSTFLAGS="-C passes=$ATOMIC_PARAM -C link-arg=-Ttext=0x00200800 -C panic=abort"\
-      RISC0_FEATURE_bigint2=1\
-      RUSTUP_TOOLCHAIN=risc0 \
-      CARGO_BUILD_TARGET=riscv32im-risc0-zkvm-elf \
-      cargo build --release --ignore-rust-version --features $2
-
-fi
-# If the prover is sp1, then build the program.
-if [ "$2" == "sp1" ]; then
-    # The reason we don't just use `cargo prove build` from the SP1 CLI is we need to pass a --features ...
-    # flag to select between sp1 and risc0.
-    ATOMIC_PARAM=$(check_rust_version "succinct")
-    RUSTFLAGS="-C passes=$ATOMIC_PARAM -C link-arg=-Ttext=0x00200800 -C panic=abort" \
+    # Run a builder inherited from Raiko itself
+    if [ "$PROVER" == "sp1" ]; then
         RUSTUP_TOOLCHAIN=succinct \
-        CARGO_BUILD_TARGET=riscv32im-succinct-zkvm-elf \
-        cargo build --release --ignore-rust-version --features $2
+            cargo run --bin raiko-sp1-builder
+    else
+        echo "Prover $PROVER is not supported for Raiko benchmark!"
+        exit
+    fi
+else
+    # Get program directory name as $PROGRAM and append "-$PROVER" to it if $PROGRAM is "tendermint"
+    # or "reth"
+    if [ "$PROGRAM" = "tendermint" ] || [ "$PROGRAM" = "reth" ]; then
+        program_directory="${1}-$PROVER"
+    else
+        program_directory="$PROGRAM"
+    fi
+
+    # cd to program directory computed above
+    cd "benchmarks/$program_directory"
+
+    # If the prover is risc0, then build the program.
+    if [ "$PROVER" == "risc0" ]; then
+        echo "Building Risc0"
+        # Use the risc0 toolchain.
+        ATOMIC_PARAM=$(check_rust_version "risc0")
+        CC=gcc CC_riscv32im_risc0_zkvm_elf=~/.risc0/cpp/bin/riscv32-unknown-elf-gcc\
+          RUSTFLAGS="-C passes=$ATOMIC_PARAM -C link-arg=-Ttext=0x00200800 -C panic=abort"\
+          RISC0_FEATURE_bigint2=1\
+          RUSTUP_TOOLCHAIN=risc0 \
+          CARGO_BUILD_TARGET=riscv32im-risc0-zkvm-elf \
+          cargo build --release --ignore-rust-version --features $PROVER
+
+    fi
+
+    # If the prover is sp1, then build the program.
+    if [ "$PROVER" == "sp1" ]; then
+        # The reason we don't just use `cargo prove build` from the SP1 CLI is we need to pass a --features ...
+        # flag to select between sp1 and risc0.
+        ATOMIC_PARAM=$(check_rust_version "succinct")
+        RUSTFLAGS="-C passes=$ATOMIC_PARAM -C link-arg=-Ttext=0x00200800 -C panic=abort" \
+            RUSTUP_TOOLCHAIN=succinct \
+            CARGO_BUILD_TARGET=riscv32im-succinct-zkvm-elf \
+            cargo build --release --ignore-rust-version --features $PROVER
+    fi
+
+    if [ "$PROVER" == "lita" ]; then
+      echo "Building Lita"
+      # Use the lita toolchain.
+      CC_valida_unknown_baremetal_gnu="/valida-toolchain/bin/clang" \
+        CFLAGS_valida_unknown_baremetal_gnu="--sysroot=/valida-toolchain -isystem /valida-toolchain/include" \
+        RUSTUP_TOOLCHAIN=valida \
+        CARGO_BUILD_TARGET=valida-unknown-baremetal-gnu \
+        cargo build --release --ignore-rust-version --features $PROVER
+
+      # Lita does not have any hardware acceleration. Also it does not have an SDK
+      # or a crate to be used on rust. We need to benchmark it without rust
+      cd ../../
+      ./eval_lita.sh $PROGRAM $PROVER $SHARD_SIZE $program_directory $6
+      exit
+    fi
+
+    if [ "$PROVER" == "nexus" ]; then
+      echo "Building Nexus"
+      # Hardcode the memlimit to 8 MB
+      RUSTFLAGS="-C link-arg=--defsym=MEMORY_LIMIT=0x80000 -C link-arg=-T../../nova.x" \
+        CARGO_BUILD_TARGET=riscv32i-unknown-none-elf \
+        RUSTUP_TOOLCHAIN=1.77.0 \
+        cargo build --release --ignore-rust-version --features $PROVER
+    fi
+
+    cd ../../
 fi
-
-if [ "$2" == "lita" ]; then
-  echo "Building Lita"
-  # Use the lita toolchain.
-  CC_valida_unknown_baremetal_gnu="/valida-toolchain/bin/clang" \
-    CFLAGS_valida_unknown_baremetal_gnu="--sysroot=/valida-toolchain -isystem /valida-toolchain/include" \
-    RUSTUP_TOOLCHAIN=valida \
-    CARGO_BUILD_TARGET=valida-unknown-baremetal-gnu \
-    cargo build --release --ignore-rust-version --features $2
-
-  # Lita does not have any hardware acceleration. Also it does not have an SDK
-  # or a crate to be used on rust. We need to benchmark it without rust
-  cd ../../
-  ./eval_lita.sh $1 $2 $3 $program_directory $6
-  exit
-fi
-
-if [ "$2" == "nexus" ]; then
-  echo "Building Nexus"
-  # Hardcode the memlimit to 8 MB
-  RUSTFLAGS="-C link-arg=--defsym=MEMORY_LIMIT=0x80000 -C link-arg=-T../../nova.x" \
-    CARGO_BUILD_TARGET=riscv32i-unknown-none-elf \
-    RUSTUP_TOOLCHAIN=1.77.0 \
-    cargo build --release --ignore-rust-version --features $2
-fi
-
-cd ../../
 
 echo "Running eval script"
 
@@ -113,40 +134,42 @@ export RUST_LOG=info
 
 # Detect whether we're on an instance with a GPU.
 if nvidia-smi > /dev/null 2>&1; then
-  FEATURES="$2, cuda"
+  FEATURES="$PROVER, cuda"
   if [ "$2" = "jolt" ]; then
     export ICICLE_BACKEND_INSTALL_DIR=$(pwd)/target/release/deps/icicle/lib/backend
   fi
 else
-  FEATURES="$2"
+  FEATURES="$PROVER"
 fi
 
-if [ "$2" = "jolt" ]; then
+if [ "$PROVER" = "jolt" ]; then
   export RUSTFLAGS=""
   export RUSTUP_TOOLCHAIN="nightly-2024-09-30"
 fi
 
+set -x # echo on
 
 # Run the benchmark.
 RISC0_INFO=1 \
+  RUST_BACKTRACE=1 \
     cargo run \
     -p zkvm-benchmarks-eval \
     --release \
     --no-default-features \
     --features "$FEATURES" \
     -- \
-    --program "$1" \
-    --prover "$2" \
-    --shard-size "$3" \
-    --filename "$4" \
-     ${5:+$([[ "$1" == "fibonacci" ]] && echo "--fibonacci-input" || echo "--block-number") $5}
-    # --hashfn "$3" \
-    # --shard-size "$4" \
-    # --filename "$5" \
-    #  ${6:+$([[ "$1" == "fibonacci" ]] && echo "--fibonacci-input" || echo "--block-number") $6}
+    --program "$PROGRAM" \
+    --prover "$PROVER" \
+    --shard-size "$SHARD_SIZE" \
+    --filename "$FILENAME" \
+    ${ADDED_ARGS:+$(
+      [[ "$PROGRAM" == "fibonacci" ]] && echo "--fibonacci-input" || echo "--block-number"
+    ) $ADDED_ARGS} \
+    --taiko-blocks-dir-suffix "$BLOCKS_DIR_SUFFIX"
+    # --hashfn "$HASHFN"
 
 # Revert Cargo.toml as the last step
-if [ "$2" = "jolt" ]; then
+if [ "$PROVER" = "jolt" ]; then
     mv Cargo.toml.bak Cargo.toml
 fi
 

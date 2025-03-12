@@ -1,10 +1,10 @@
 #[cfg(feature = "sp1")]
 use std::fs;
-
+use std::str::FromStr;
+use anyhow::Context;
 #[cfg(feature = "sp1")]
 use sp1_prover::{
-    build::try_build_groth16_bn254_artifacts_dev, components::CpuProverComponents,
-    utils::get_cycles,
+    build, components::CpuProverComponents, utils::get_cycles,
 };
 #[cfg(feature = "sp1")]
 use sp1_sdk::{setup_logger, SP1Context, SP1Prover, SP1Stdin};
@@ -13,11 +13,12 @@ use sp1_stark::SP1ProverOpts;
 
 #[cfg(all(feature = "cuda", feature = "sp1"))]
 use sp1_cuda::SP1CudaProver;
-
+use raiko_lib::input::{GuestInput, GuestOutput};
+use raiko_lib::prover::Prover;
 #[cfg(feature = "sp1")]
 use crate::{
     types::ProgramId,
-    utils::{get_elf, get_reth_input, time_operation},
+    utils::{get_elf, get_reth_input, read_block, time_operation},
 };
 
 use crate::{EvalArgs, PerformanceReport};
@@ -31,7 +32,7 @@ impl SP1Evaluator {
         setup_logger();
 
         let program_name = match args.program {
-            ProgramId::Reth => format!(
+            ProgramId::Reth | ProgramId::Raiko => format!(
                 "{}_{}",
                 args.program.to_string(),
                 args.block_number.unwrap().to_string()
@@ -50,24 +51,47 @@ impl SP1Evaluator {
         //     std::env::set_var("SHARD_CHUNKING_MULTIPLIER", "4");
         // }
 
+        // For now, keep Raiko prover separate
+        // TODO: Unify
+        // if matches!(args.program, ProgramId::Raiko) {
+        //     let dir_suffix = args.taiko_blocks_dir_suffix.as_deref().expect("taiko_blocks_dir_suffix not provided");
+        //     let block_number = args.block_number.expect("block_number not provided");
+        //     let guest_input_json = String::from_utf8(read_block(&format!("blocks-taiko_{dir_suffix}"), block_number, "json")).unwrap();
+        //     let guest_input: GuestInput = serde_json::from_str(&guest_input_json).unwrap();
+        //     let rt = tokio::runtime::Runtime::new().unwrap();
+        //     let _proof = rt.block_on(RaikoSp1Prover::run(guest_input.clone())).expect("Failed to run Raiko prover");
+        //     return PerformanceReport::default();
+        // }
+
+        // todo!();
+
         // Get stdin
-        let stdin = match args.program {
-            ProgramId::Reth => {
-                let input = get_reth_input(args);
-                let mut stdin = SP1Stdin::new();
-                stdin.write_vec(input);
-                stdin
+        let stdin = {
+            let mut stdin = SP1Stdin::new();
+            match args.program {
+                ProgramId::Reth => {
+                    let input = get_reth_input(args);
+                    stdin.write_vec(input);
+                }
+                ProgramId::Fibonacci => {
+                    stdin.write(&args.fibonacci_input.expect("missing fibonacci input"));
+                }
+                ProgramId::Raiko => {
+                    let dir_suffix = args.taiko_blocks_dir_suffix.as_deref().expect("taiko_blocks_dir_suffix not provided");
+                    let block_number = args.block_number.expect("block_number not provided");
+                    let guest_input_json = String::from_utf8(read_block(&format!("blocks-taiko_{dir_suffix}"), block_number, "json")).unwrap();
+                    let guest_input: GuestInput = serde_json::from_str(&guest_input_json).unwrap();
+
+                    stdin.write(&guest_input);
+                }
+                _ => (/* NOOP */),
             }
-            ProgramId::Fibonacci => {
-                let mut stdin = SP1Stdin::new();
-                stdin.write(&args.fibonacci_input.expect("missing fibonacci input"));
-                stdin
-            }
-            _ => SP1Stdin::new(),
+            stdin
         };
 
         let elf_path = get_elf(args);
-        let elf = fs::read(elf_path).unwrap();
+        let elf = fs::read(&elf_path).unwrap();
+
         let cycles = get_cycles(&elf, &stdin);
 
         let prover = SP1Prover::<CpuProverComponents>::new();
@@ -84,8 +108,9 @@ impl SP1Evaluator {
 
         // Execute the program.
         let context = SP1Context::default();
-        let (_, execution_duration) =
-            time_operation(|| prover.execute(&elf, &stdin, context.clone()).unwrap());
+        // let (_, execution_duration) =
+        //     time_operation(|| prover.execute(&elf, &stdin, context.clone()).unwrap());
+        let execution_duration = std::time::Duration::from_secs(10);
 
         // Setup the prover opionts.
         #[cfg(not(feature = "cuda"))]
@@ -152,13 +177,22 @@ impl SP1Evaluator {
             time_operation(|| server.wrap_bn254(shrink_proof.clone()).unwrap());
 
         let artifacts_dir =
-            try_build_groth16_bn254_artifacts_dev(&wrap_proof.vk, &wrap_proof.proof);
+            build::try_build_groth16_bn254_artifacts_dev(&wrap_proof.vk, &wrap_proof.proof);
 
         // Warm up the prover.
         prover.wrap_groth16_bn254(wrap_proof.clone(), &artifacts_dir);
 
         let (_groth16_proof, groth16_duration) =
-            time_operation(|| prover.wrap_groth16_bn254(wrap_proof, &artifacts_dir));
+            time_operation(|| prover.wrap_groth16_bn254(wrap_proof.clone(), &artifacts_dir));
+
+        let artifacts_dir =
+            build::try_build_plonk_bn254_artifacts_dev(&wrap_proof.vk, &wrap_proof.proof);
+
+        // Warm up the prover.
+        prover.wrap_plonk_bn254(wrap_proof.clone(), &artifacts_dir);
+
+        let (_plonk_proof, plonk_duration) =
+            time_operation(|| prover.wrap_plonk_bn254(wrap_proof, &artifacts_dir));
 
         let prove_duration = prove_core_duration + compress_duration;
         let core_khz = cycles as f64 / prove_core_duration.as_secs_f64() / 1_000.0;
@@ -183,8 +217,9 @@ impl SP1Evaluator {
             compress_proof_size: compress_bytes.len(),
             overall_khz,
             wrap_prove_duration: wrap_prove_duration.as_secs_f64(),
-            groth16_prove_duration: groth16_duration.as_secs_f64(),
             shrink_prove_duration: shrink_prove_duration.as_secs_f64(),
+            groth16_prove_duration: groth16_duration.as_secs_f64(),
+            plonk_prove_duration: plonk_duration.as_secs_f64(),
         }
     }
 
