@@ -2,6 +2,7 @@
 members = [
     "block-downloader",
     "eval",
+    "raiko-block-downloader",
 ]
 resolver = "2"
 
@@ -10,7 +11,9 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace.dependencies]
-alloy-provider = { version = "0.3", default-features = false, features = ["reqwest", "reqwest-rustls-tls"] }
+raiko-lib = { git = "https://github.com/NethermindEth/raiko-proof-aggregation", branch = "zkvm-benchmarks", features = ["std", "sp1"] }
+
+anyhow = "1.0.95"
 bincode = "1.3.3"
 clap = { version = "4.5.3", features = ["derive"] }
 eyre = "0.6.12"
@@ -21,6 +24,26 @@ tokio = { version = "1.43.0", features = ["rt", "rt-multi-thread", "macros"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 url = "2.5.4"
+
+# Alloy
+alloy-primitives = { version = "0.7.2", default-features = false }
+alloy-rpc-types = { version = "0.1", default-features = false }
+alloy-provider = { version = "0.3", default-features = false, features = [
+    "reqwest",
+    "reqwest-rustls-tls"
+] }
+
+# Raiko: other
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+
+
+[patch.crates-io]
+# Patches needed for Raiko
+revm = { git = "https://github.com/taikoxyz/revm.git", branch = "v36-taiko" }
+revm-primitives = { git = "https://github.com/taikoxyz/revm.git", branch = "v36-taiko" }
+revm-precompile = { git = "https://github.com/taikoxyz/revm.git", branch = "v36-taiko" }
+blst = { git = "https://github.com/CeciliaZ030/blst.git", branch = "v0.3.12-serialize" }
+
 
 [profile.dev]
 opt-level = 3
