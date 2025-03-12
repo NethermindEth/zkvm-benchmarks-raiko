@@ -1,26 +1,22 @@
-mod interfaces;
-mod preflight;
-mod provider;
-
+use alloy_primitives::Address;
+use alloy_rpc_types::EIP1186AccountProofResponse;
+use clap::Parser;
+use raiko_core::interfaces::ProofRequest;
+use raiko_core::provider::rpc::RpcBlockDataProvider;
+use raiko_core::Raiko;
+use raiko_lib::consts::SupportedChainSpecs;
+use raiko_lib::input::BlobProofType;
+use raiko_lib::primitives::B256;
+use raiko_lib::proof_type::ProofType;
+use serde::Serialize;
+use serde_json::ser::{Formatter, PrettyFormatter};
+use serde_json::Serializer;
+use std::collections::HashMap;
+use std::io::Write;
 use std::{
     fs::{self, File},
     path::PathBuf,
 };
-use std::collections::HashMap;
-use std::io::Write;
-use alloy_primitives::Address;
-use alloy_rpc_types::EIP1186AccountProofResponse;
-use clap::Parser;
-use serde::Serialize;
-use serde_json::ser::{Formatter, PrettyFormatter};
-use serde_json::Serializer;
-use raiko_lib::consts::{ChainSpec, SupportedChainSpecs};
-use raiko_lib::input::{BlobProofType, GuestInput, TaikoProverData};
-use raiko_lib::primitives::B256;
-use crate::interfaces::ProofRequest;
-use crate::preflight::{preflight, PreflightData};
-use crate::provider::BlockDataProvider;
-use crate::provider::rpc::RpcBlockDataProvider;
 
 pub type RaikoResult<T> = Result<T, anyhow::Error>;
 
@@ -29,15 +25,15 @@ pub type MerkleProof = HashMap<Address, EIP1186AccountProofResponse>;
 #[derive(Parser)]
 #[command(about = "Download blocks and save them to disk")]
 struct Args {
-    /// List of block numbers to download
-    #[arg(required = true)]
-    block_numbers: Vec<u64>,
-
     #[arg(required = true)]
     taiko_network: String,
 
     #[arg(required = true)]
     l1_network: String,
+
+    /// List of block numbers to download
+    #[arg(required = true)]
+    block_numbers: Vec<u64>,
 }
 
 #[tokio::main]
@@ -78,8 +74,10 @@ async fn main() -> RaikoResult<()> {
             network: taiko_network.clone(),
             graffiti: B256::ZERO,
             prover: Address::ZERO,
+            proof_type: ProofType::Sp1,
             l1_network: l1_network.clone(),
             blob_proof_type: BlobProofType::ProofOfEquivalence,
+            prover_args: Default::default(),
         };
         tracing::info!("Downloading block {}", block_number);
         let raiko = Raiko::new(l1_chain_spec.clone(), taiko_chain_spec.clone(), proof_request.clone());
@@ -104,45 +102,6 @@ async fn main() -> RaikoResult<()> {
     }
 
     Ok(())
-}
-
-
-pub struct Raiko {
-    l1_chain_spec: ChainSpec,
-    taiko_chain_spec: ChainSpec,
-    request: ProofRequest,
-}
-
-impl Raiko {
-    pub fn new(
-        l1_chain_spec: ChainSpec,
-        taiko_chain_spec: ChainSpec,
-        request: ProofRequest,
-    ) -> Self {
-        Self {
-            l1_chain_spec,
-            taiko_chain_spec,
-            request,
-        }
-    }
-
-    pub async fn generate_input<BDP: BlockDataProvider>(
-        &self,
-        provider: BDP,
-    ) -> RaikoResult<GuestInput> {
-        let preflight_data = PreflightData::new(
-            self.request.block_number,
-            self.request.l1_inclusion_block_number,
-            self.l1_chain_spec.to_owned(),
-            self.taiko_chain_spec.to_owned(),
-            TaikoProverData {
-                graffiti: self.request.graffiti,
-                prover: self.request.prover,
-            },
-            self.request.blob_proof_type.clone(),
-        );
-        Ok(preflight(provider, preflight_data).await?)
-    }
 }
 
 /// Like [PrettyFormatter], but places array element on the same line.

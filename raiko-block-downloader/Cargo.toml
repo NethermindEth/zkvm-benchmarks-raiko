@@ -1,69 +1,30 @@
-# Adapted from Raiko's "core" crate
-
 [package]
 name = "raiko-block-downloader"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
-
-
 # raiko
 raiko-lib = { workspace = true }
-
-# reth
-reth-primitives = { workspace = true }
-reth-evm-ethereum = { workspace = true }
-reth-evm = { workspace = true }
-reth-revm = { workspace = true }
-reth-provider = { workspace = true }
+raiko-core = { git = "https://github.com/NethermindEth/raiko-proof-aggregation", branch = "zkvm-benchmarks" }
 
 # alloy
-alloy-rlp = { workspace = true }
-alloy-rlp-derive = { workspace = true }
-alloy-sol-types = { workspace = true }
 alloy-primitives = { workspace = true }
 alloy-rpc-types = { workspace = true }
-alloy-provider = { version = "0.1", default-features = false, features = [
-    "reqwest",
-] }
-alloy-transport-http = { workspace = true }
-alloy-consensus = { workspace = true }
-alloy-network = { workspace = true }
-alloy-rpc-client = { workspace = true, features = ["reqwest"] }
 
 # tracing and logging
 tracing = { workspace = true }
 tracing-subscriber.workspace = true
-bincode = { workspace = true }
 
 # errors
 anyhow = { workspace = true }
-thiserror = { workspace = true }
 
 # serde
 serde = { workspace = true }
 serde_json = { workspace = true }
-serde_with = { workspace = true }
-
-# c-kzg
-kzg = { workspace = true }
-kzg_traits = { workspace = true }
 
 # async
 tokio = { workspace = true }
-reqwest = { version = "0.11.22", features = ["json"] }
-reqwest_alloy = { package = "reqwest", version = "0.12.4", features = ["json"] }
-
-# docs
-utoipa = { version = "4.2.0", features = ["axum_extras"] }
 
 # cli
 clap = { workspace = true }
-
-eyre.workspace = true
-rsp-client-executor.workspace = true
-rsp-host-executor.workspace = true
-url.workspace = true
-
-[dev-dependencies]

@@ -1,7 +1,0 @@
-{
-    "network": "taiko_a7",
-    "l1_network": "holesky",
-    "sgx": {
-        "instance_id": 123456
-    }
-}
