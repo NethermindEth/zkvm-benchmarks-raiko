@@ -817,7 +817,8 @@ dependencies = [
 [[package]]
 name = "alloy-serde"
 version = "0.1.4"
-source = "git+https://github.com/CeciliaZ030/alloy.git?branch=v0.1.4-fix#a95c679c0a6a38803f76d0406a636765e265e378"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9416c52959e66ead795a11f4a86c248410e9e368a0765710e57055b8a1774dd6"
 dependencies = [
  "alloy-primitives 0.7.7",
  "serde",
@@ -12355,7 +12356,6 @@ dependencies = [
 name = "zkvm-benchmarks-eval"
 version = "0.1.0"
 dependencies = [
- "anyhow",
  "bincode",
  "clap",
  "csv",
@@ -12364,12 +12364,9 @@ dependencies = [
  "jolt-sdk",
  "loop-jolt",
  "nexus-sdk",
- "raiko-lib",
- "reth-primitives 1.0.0-rc.2",
  "risc0-zkvm",
  "rsp-client-executor",
  "serde",
- "serde_json",
  "sp1-cuda",
  "sp1-prover",
  "sp1-sdk",

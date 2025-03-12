@@ -33,24 +33,17 @@ alloy-provider = { version = "0.3", default-features = false, features = [
     "reqwest-rustls-tls"
 ] }
 
-# Raiko: Reth
-reth-primitives = { git = "https://github.com/taikoxyz/taiko-reth.git", branch = "v1.0.0-rc.2-taiko", default-features = false, features = [
-    "alloy-compat",
-    "taiko",
-    "k256",
-] }
-
 # Raiko: other
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 
 
 [patch.crates-io]
-# Patches needed for Taiko
+# Patches needed for Raiko
 revm = { git = "https://github.com/taikoxyz/revm.git", branch = "v36-taiko" }
 revm-primitives = { git = "https://github.com/taikoxyz/revm.git", branch = "v36-taiko" }
 revm-precompile = { git = "https://github.com/taikoxyz/revm.git", branch = "v36-taiko" }
 blst = { git = "https://github.com/CeciliaZ030/blst.git", branch = "v0.3.12-serialize" }
-alloy-serde = { git = "https://github.com/CeciliaZ030/alloy.git", branch = "v0.1.4-fix" }
+
 
 [profile.dev]
 opt-level = 3

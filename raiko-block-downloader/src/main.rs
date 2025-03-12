@@ -11,19 +11,14 @@ use raiko_lib::proof_type::ProofType;
 use serde::Serialize;
 use serde_json::ser::{Formatter, PrettyFormatter};
 use serde_json::Serializer;
-use std::collections::HashMap;
 use std::io::Write;
 use std::{
     fs::{self, File},
     path::PathBuf,
 };
 
-pub type RaikoResult<T> = Result<T, anyhow::Error>;
-
-pub type MerkleProof = HashMap<Address, EIP1186AccountProofResponse>;
-
 #[derive(Parser)]
-#[command(about = "Download blocks and save them to disk")]
+#[command(about = "Download Taiko blocks and save them to disk")]
 struct Args {
     #[arg(required = true)]
     taiko_network: String,
@@ -37,7 +32,7 @@ struct Args {
 }
 
 #[tokio::main]
-async fn main() -> RaikoResult<()> {
+async fn main() -> anyhow::Result<()> {
     // Initialize tracing subscriber
     tracing_subscriber::FmtSubscriber::builder()
         .with_max_level(tracing::Level::INFO)
