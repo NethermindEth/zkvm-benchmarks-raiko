@@ -49,8 +49,7 @@ alloy-provider = { version = "0.3", default-features = false, features = [
 ] }
 
 # SP1
-# TODO(alex): Replace with { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc", features = ["cuda"] }
-# and check for differences
+# TODO(alex): Replace with v4.0.1 and check for differences
 sp1-sdk = { version = "=4.0.0-rc.8", features = ["cuda"] }
 sp1-prover = { version = "=4.0.0-rc.8" }
 sp1-zkvm = { version = "=4.0.0-rc.8" }

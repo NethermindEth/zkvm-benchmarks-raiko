@@ -48,20 +48,6 @@ impl SP1Evaluator {
         //     std::env::set_var("SHARD_CHUNKING_MULTIPLIER", "4");
         // }
 
-        // For now, keep Raiko prover separate
-        // TODO: Unify
-        // if matches!(args.program, ProgramId::Raiko) {
-        //     let dir_suffix = args.taiko_blocks_dir_suffix.as_deref().expect("taiko_blocks_dir_suffix not provided");
-        //     let block_number = args.block_number.expect("block_number not provided");
-        //     let guest_input_json = String::from_utf8(read_block(&format!("blocks-taiko_{dir_suffix}"), block_number, "json")).unwrap();
-        //     let guest_input: GuestInput = serde_json::from_str(&guest_input_json).unwrap();
-        //     let rt = tokio::runtime::Runtime::new().unwrap();
-        //     let _proof = rt.block_on(RaikoSp1Prover::run(guest_input.clone())).expect("Failed to run Raiko prover");
-        //     return PerformanceReport::default();
-        // }
-
-        // todo!();
-
         // Get stdin
         let stdin = {
             let mut stdin = SP1Stdin::new();
@@ -105,9 +91,8 @@ impl SP1Evaluator {
 
         // Execute the program.
         let context = SP1Context::default();
-        // let (_, execution_duration) =
-        //     time_operation(|| prover.execute(&elf, &stdin, context.clone()).unwrap());
-        let execution_duration = std::time::Duration::from_secs(10);
+        let (_, execution_duration) =
+            time_operation(|| prover.execute(&elf, &stdin, context.clone()).unwrap());
 
         // Setup the prover opionts.
         #[cfg(not(feature = "cuda"))]
