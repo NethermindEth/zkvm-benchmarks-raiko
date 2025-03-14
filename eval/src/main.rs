@@ -85,8 +85,12 @@ pub struct PerformanceReport {
     pub wrap_prove_duration: f64,
     /// The reported duration of the groth16 proving time in seconds.
     pub groth16_prove_duration: f64,
+    /// The size of the groth16 proof in bytes.
+    pub groth16_proof_size: usize,
     /// The reported duration of the PLONK proving time in seconds.
     pub plonk_prove_duration: f64,
+    /// The size of the PLONK proof in bytes.
+    pub plonk_proof_size: usize,
 }
 
 fn main() -> Result<()> {

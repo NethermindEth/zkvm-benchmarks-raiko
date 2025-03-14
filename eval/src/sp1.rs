@@ -164,8 +164,10 @@ impl SP1Evaluator {
         // Warm up the prover.
         prover.wrap_groth16_bn254(wrap_proof.clone(), &artifacts_dir);
 
-        let (_groth16_proof, groth16_duration) =
+        let (groth16_proof, groth16_duration) =
             time_operation(|| prover.wrap_groth16_bn254(wrap_proof.clone(), &artifacts_dir));
+
+        let groth16_proof_size = bincode::serialize(&groth16_proof).unwrap().len();
 
         let artifacts_dir =
             build::try_build_plonk_bn254_artifacts_dev(&wrap_proof.vk, &wrap_proof.proof);
@@ -173,8 +175,10 @@ impl SP1Evaluator {
         // Warm up the prover.
         prover.wrap_plonk_bn254(wrap_proof.clone(), &artifacts_dir);
 
-        let (_plonk_proof, plonk_duration) =
+        let (plonk_proof, plonk_duration) =
             time_operation(|| prover.wrap_plonk_bn254(wrap_proof, &artifacts_dir));
+
+        let plonk_proof_size = bincode::serialize(&plonk_proof).unwrap().len();
 
         let prove_duration = prove_core_duration + compress_duration;
         let core_khz = cycles as f64 / prove_core_duration.as_secs_f64() / 1_000.0;
@@ -201,7 +205,9 @@ impl SP1Evaluator {
             shrink_prove_duration: shrink_prove_duration.as_secs_f64(),
             wrap_prove_duration: wrap_prove_duration.as_secs_f64(),
             groth16_prove_duration: groth16_duration.as_secs_f64(),
+            groth16_proof_size,
             plonk_prove_duration: plonk_duration.as_secs_f64(),
+            plonk_proof_size,
         }
     }
 
