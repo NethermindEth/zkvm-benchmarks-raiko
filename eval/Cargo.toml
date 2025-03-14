@@ -13,10 +13,7 @@ tracing-subscriber.workspace = true
 tracing.workspace = true
 
 # workspace
-rsp-client-executor.workspace = true
 raiko-lib.workspace = true
-sp1-driver = { git = "https://github.com/NethermindEth/raiko-proof-aggregation", branch = "zkvm-benchmarks", features = ["enable"] }
-tokio.workspace = true
 
 # risc0
 risc0-zkvm = { version = "1.2.2", features = ["prove", "unstable"], optional = true }

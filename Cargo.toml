@@ -49,12 +49,14 @@ alloy-provider = { version = "0.3", default-features = false, features = [
 ] }
 
 # SP1
-sp1-sdk = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc", features = ["cuda"] }
-sp1-prover = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
-sp1-zkvm = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
-sp1-helper = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
-sp1-cuda = {  git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
-sp1-stark = {  git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
+# TODO(alex): Replace with { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc", features = ["cuda"] }
+# and check for differences
+sp1-sdk = { version = "=4.0.0-rc.8", features = ["cuda"] }
+sp1-prover = { version = "=4.0.0-rc.8" }
+sp1-zkvm = { version = "=4.0.0-rc.8" }
+sp1-helper = { version = "=4.0.0-rc.8" }
+sp1-cuda = { version = "=4.0.0-rc.8" }
+sp1-stark = { version = "=4.0.0-rc.8" }
 
 # Raiko: Reth
 reth-primitives = { git = "https://github.com/taikoxyz/taiko-reth.git", branch = "v1.0.0-rc.2-taiko", default-features = false, features = [

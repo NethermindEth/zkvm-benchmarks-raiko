@@ -8,6 +8,8 @@ edition = "2021"
 
 [dependencies]
 raiko-lib = { git = "https://github.com/NethermindEth/raiko-proof-aggregation", branch = "zkvm-benchmarks", features = ["std", "sp1"] }
+# TODO(alex): Replace with { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc", features = ["cuda"] }
+# and check for differences
 sp1-zkvm = { version = "4.0.0-rc.8", features = ["verify"] }
 sp1-curves = { version = "4.0.0-rc.8" }
 sha2 = { git = "https://github.com/sp1-patches/RustCrypto-hashes", package = "sha2", tag = "patch-sha2-0.10.8-sp1-4.0.0-rc.3" }

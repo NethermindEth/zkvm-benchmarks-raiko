@@ -79,10 +79,10 @@ pub struct PerformanceReport {
     pub core_khz: f64,
     /// The overall speed in KHz.
     pub overall_khz: f64,
-    /// The reported duration of the wrap proving time in seconds.
-    pub wrap_prove_duration: f64,
     /// The reported duration of the shrink proving time in seconds.
     pub shrink_prove_duration: f64,
+    /// The reported duration of the wrap proving time in seconds.
+    pub wrap_prove_duration: f64,
     /// The reported duration of the groth16 proving time in seconds.
     pub groth16_prove_duration: f64,
     /// The reported duration of the PLONK proving time in seconds.

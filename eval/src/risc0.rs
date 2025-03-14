@@ -144,8 +144,8 @@ impl Risc0Evaluator {
             compress_proof_size: recursive_proof_size,
             core_khz,
             overall_khz,
-            wrap_prove_duration: wrap_prove_duration.as_secs_f64(),
             shrink_prove_duration: 0.0,
+            wrap_prove_duration: wrap_prove_duration.as_secs_f64(),
             groth16_prove_duration: groth16_prove_duration.as_secs_f64(),
             plonk_prove_duration: 0.0, // TODO(alex): See if risc0 has PLONK out of the box
         }
