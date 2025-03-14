@@ -49,18 +49,12 @@ alloy-provider = { version = "0.3", default-features = false, features = [
 ] }
 
 # SP1
-sp1-sdk = { version = "=4.0.0-rc.8" }
-sp1-prover = { version = "=4.0.0-rc.8" }
-sp1-zkvm = { version = "=4.0.0-rc.8" }
-sp1-helper = { version = "=4.0.0-rc.8" }
-sp1-cuda = { version = "=4.0.0-rc.8" }
-sp1-stark = { version = "=4.0.0-rc.8" }
-#sp1-sdk = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc", features = ["cuda"] }
-#sp1-prover = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
-#sp1-zkvm = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
-#sp1-helper = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
-#sp1-cuda = {  git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
-#sp1-stark = {  git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
+sp1-sdk = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc", features = ["cuda"] }
+sp1-prover = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
+sp1-zkvm = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
+sp1-helper = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
+sp1-cuda = {  git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
+sp1-stark = {  git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-no-ctrlc" }
 
 # Raiko: Reth
 reth-primitives = { git = "https://github.com/taikoxyz/taiko-reth.git", branch = "v1.0.0-rc.2-taiko", default-features = false, features = [
@@ -88,7 +82,7 @@ thiserror = { version = "1.0" }
 
 
 [patch.crates-io]
-# Patches needed for Taiko
+# Patches needed for Raiko
 revm = { git = "https://github.com/taikoxyz/revm.git", branch = "v36-taiko" }
 revm-primitives = { git = "https://github.com/taikoxyz/revm.git", branch = "v36-taiko" }
 revm-precompile = { git = "https://github.com/taikoxyz/revm.git", branch = "v36-taiko" }
@@ -97,13 +91,13 @@ blst = { git = "https://github.com/CeciliaZ030/blst.git", branch = "v0.3.12-seri
 alloy-serde = { git = "https://github.com/CeciliaZ030/alloy.git", branch = "v0.1.4-fix" }
 
 [profile.dev]
-opt-level = 0
+opt-level = 3
 
 [profile.dev.build-override]
-opt-level = 0
+opt-level = 3
 
 [profile.release]
-opt-level = 0
+opt-level = 3
 lto = true
 
 [profile.fast]
@@ -112,4 +106,4 @@ debug = true
 debug-assertions = true
 
 [profile.release.build-override]
-opt-level = 0
+opt-level = 3

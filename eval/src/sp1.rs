@@ -1,7 +1,5 @@
 #[cfg(feature = "sp1")]
 use std::fs;
-use std::str::FromStr;
-use anyhow::Context;
 #[cfg(feature = "sp1")]
 use sp1_prover::{
     build, components::CpuProverComponents, utils::get_cycles,
@@ -13,8 +11,7 @@ use sp1_stark::SP1ProverOpts;
 
 #[cfg(all(feature = "cuda", feature = "sp1"))]
 use sp1_cuda::SP1CudaProver;
-use raiko_lib::input::{GuestInput, GuestOutput};
-use raiko_lib::prover::Prover;
+use raiko_lib::input::GuestInput;
 #[cfg(feature = "sp1")]
 use crate::{
     types::ProgramId,

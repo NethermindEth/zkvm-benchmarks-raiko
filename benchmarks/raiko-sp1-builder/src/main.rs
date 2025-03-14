@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 fn main() {
     let pipeline = Sp1Pipeline::new("benchmarks/raiko-sp1", "release");
-    pipeline.bins(&["raiko-sp1", "raiko-sp1-aggregation"], "benchmarks/raiko-sp1/elf");
+    pipeline.bins(&["raiko-sp1"], "benchmarks/raiko-sp1/elf");
 }
 
 pub struct Sp1Pipeline {
