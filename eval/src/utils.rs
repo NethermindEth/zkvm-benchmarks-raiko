@@ -10,7 +10,7 @@ use crate::{
 
 pub fn get_elf(args: &EvalArgs) -> String {
     let mut program_dir = args.program.to_string();
-    if args.program == ProgramId::Tendermint || args.program == ProgramId::Reth {
+    if args.program == ProgramId::Tendermint || args.program == ProgramId::Reth || args.program == ProgramId::Raiko {
         program_dir += "-";
         program_dir += args.prover.to_string().as_str();
     }
@@ -38,20 +38,22 @@ pub fn get_elf(args: &EvalArgs) -> String {
 }
 
 pub fn get_reth_input(args: &EvalArgs) -> Vec<u8> {
-    if let Some(block_number) = args.block_number {
-        let current_dir = env::current_dir().expect("Failed to get current working directory");
-        let blocks_dir = current_dir.join("eval").join("blocks");
-        let file_path = blocks_dir.join(format!("{}.bin", block_number));
+    let block_number = args.block_number.expect("Block number is required for Reth program");
+    read_block("blocks", block_number, "bin")
+}
 
-        match fs::read(&file_path) {
-            Ok(bytes) => bytes,
-            Err(e) => {
-                tracing::error!("Failed to read block file: {:?}", e);
-                panic!("Unable to read block file: {:?}", e);
-            }
+
+pub fn read_block(blocks_dir_name: &str, block_number: u64, ext: &str) -> Vec<u8> {
+    let current_dir = env::current_dir().expect("Failed to get current working directory");
+    let blocks_dir = current_dir.join("eval").join(blocks_dir_name);
+    let file_path = blocks_dir.join(format!("{block_number}.{ext}"));
+
+    match fs::read(&file_path) {
+        Ok(bytes) => bytes,
+        Err(e) => {
+            tracing::error!("Failed to read block file: {:?}", e);
+            panic!("Unable to read block file: {:?}", e);
         }
-    } else {
-        panic!("Block number is required for Reth program");
     }
 }
 

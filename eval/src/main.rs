@@ -38,6 +38,8 @@ pub struct EvalArgs {
     block_number: Option<u64>,
     #[arg(long)]
     fibonacci_input: Option<u32>,
+    #[arg(long)]
+    taiko_blocks_dir_suffix: Option<String>,
 }
 
 /// The performance report of a zkVM on a program.
@@ -77,12 +79,18 @@ pub struct PerformanceReport {
     pub core_khz: f64,
     /// The overall speed in KHz.
     pub overall_khz: f64,
+    /// The reported duration of the shrink proving time in seconds.
+    pub shrink_prove_duration: f64,
     /// The reported duration of the wrap proving time in seconds.
     pub wrap_prove_duration: f64,
     /// The reported duration of the groth16 proving time in seconds.
     pub groth16_prove_duration: f64,
-    /// The reported duration of the shrink proving time in seconds.
-    pub shrink_prove_duration: f64,
+    /// The size of the groth16 proof in bytes.
+    pub groth16_proof_size: usize,
+    /// The reported duration of the PLONK proving time in seconds.
+    pub plonk_prove_duration: f64,
+    /// The size of the PLONK proof in bytes.
+    pub plonk_proof_size: usize,
 }
 
 fn main() -> Result<()> {

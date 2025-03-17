@@ -3,6 +3,7 @@ members = [
     "block-downloader",
     "eval",
     "raiko-block-downloader",
+    "benchmarks/raiko-sp1-builder"
 ]
 resolver = "2"
 
@@ -26,15 +27,59 @@ tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 url = "2.5.4"
 
 # Alloy
+alloy-rlp = { version = "0.3.4", default-features = false }
+alloy-rlp-derive = { version = "0.3.4", default-features = false }
+alloy-sol-types = { version = "0.7.2", default-features = false }
+alloy-eips = { version = "0.1", default-features = false, features = ["serde"] }
 alloy-primitives = { version = "0.7.2", default-features = false }
 alloy-rpc-types = { version = "0.1", default-features = false }
+alloy-transport-http = { version = "0.1", default-features = false, features = [
+    "reqwest",
+] }
+alloy-consensus = { version = "0.1", default-features = false, features = [
+    "serde",
+] }
+alloy-network = { version = "0.1", default-features = false, features = [
+    "k256",
+] }
+alloy-rpc-client = { version = "0.1", default-features = false }
 alloy-provider = { version = "0.3", default-features = false, features = [
     "reqwest",
     "reqwest-rustls-tls"
 ] }
 
+# SP1
+# TODO(alex): Replace with v4.0.1 and check for differences
+sp1-sdk = { version = "=4.0.0-rc.8", features = ["cuda"] }
+sp1-prover = { version = "=4.0.0-rc.8" }
+sp1-zkvm = { version = "=4.0.0-rc.8" }
+sp1-helper = { version = "=4.0.0-rc.8" }
+sp1-cuda = { version = "=4.0.0-rc.8" }
+sp1-stark = { version = "=4.0.0-rc.8" }
+
+# Raiko: Reth
+reth-primitives = { git = "https://github.com/taikoxyz/taiko-reth.git", branch = "v1.0.0-rc.2-taiko", default-features = false, features = [
+    "alloy-compat",
+    "taiko",
+    "k256",
+] }
+reth-evm-ethereum = { git = "https://github.com/taikoxyz/taiko-reth.git", branch = "v1.0.0-rc.2-taiko", default-features = false }
+reth-evm = { git = "https://github.com/taikoxyz/taiko-reth.git", branch = "v1.0.0-rc.2-taiko", default-features = false }
+reth-rpc-types = { git = "https://github.com/taikoxyz/taiko-reth.git", branch = "v1.0.0-rc.2-taiko", default-features = false }
+reth-revm = { git = "https://github.com/taikoxyz/taiko-reth.git", branch = "v1.0.0-rc.2-taiko", default-features = false }
+reth-chainspec = { git = "https://github.com/taikoxyz/taiko-reth.git", branch = "v1.0.0-rc.2-taiko", default-features = false, features = [
+    "taiko",
+] }
+reth-provider = { git = "https://github.com/taikoxyz/taiko-reth.git", branch = "v1.0.0-rc.2-taiko", default-features = false }
+
 # Raiko: other
+kzg = { package = "rust-kzg-zkcrypto", git = "https://github.com/ceciliaz030/rust-kzg.git", branch = "brecht/sp1-patch", default-features = false }
+kzg_traits = { package = "kzg", git = "https://github.com/ceciliaz030/rust-kzg.git", branch = "brecht/sp1-patch", default-features = false }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+serde_with = { version = "3.0" }
+hex = { version = "0.4.3" }
+thiserror-no-std = "2.0.2"
+thiserror = { version = "1.0" }
 
 
 [patch.crates-io]
@@ -42,8 +87,9 @@ serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 revm = { git = "https://github.com/taikoxyz/revm.git", branch = "v36-taiko" }
 revm-primitives = { git = "https://github.com/taikoxyz/revm.git", branch = "v36-taiko" }
 revm-precompile = { git = "https://github.com/taikoxyz/revm.git", branch = "v36-taiko" }
+secp256k1 = { git = "https://github.com/CeciliaZ030/rust-secp256k1", branch = "sp1-patch" }
 blst = { git = "https://github.com/CeciliaZ030/blst.git", branch = "v0.3.12-serialize" }
-
+alloy-serde = { git = "https://github.com/CeciliaZ030/alloy.git", branch = "v0.1.4-fix" }
 
 [profile.dev]
 opt-level = 3

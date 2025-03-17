@@ -113,10 +113,12 @@ impl Risc0Evaluator {
         });
         let seal_bytes = bn254_proof.get_seal_bytes();
         tracing::info!("Running groth16 wrapper");
-        let (_, groth16_prove_duration) =
+        let (groth16_proof, groth16_prove_duration) =
             time_operation(|| risc0_zkvm::stark_to_snark(&seal_bytes).unwrap());
 
         tracing::info!("Done running groth16");
+
+        let groth16_proof_size = bincode::serialize(&groth16_proof).unwrap().len();
 
         // Get the recursive proof size.
         let recursive_proof_size = succinct_receipt.seal.len() * 4;
@@ -144,9 +146,12 @@ impl Risc0Evaluator {
             compress_proof_size: recursive_proof_size,
             core_khz,
             overall_khz,
+            shrink_prove_duration: 0.0,
             wrap_prove_duration: wrap_prove_duration.as_secs_f64(),
             groth16_prove_duration: groth16_prove_duration.as_secs_f64(),
-            shrink_prove_duration: 0.0,
+            groth16_proof_size,
+            plonk_prove_duration: 0.0, // TODO(alex): See if risc0 has PLONK out of the box
+            plonk_proof_size: 0,
         }
     }
 
