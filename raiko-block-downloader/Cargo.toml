@@ -5,12 +5,13 @@ edition.workspace = true
 
 [dependencies]
 # raiko
-raiko-lib = { workspace = true }
-raiko-core = { git = "https://github.com/NethermindEth/raiko-proof-aggregation", branch = "zkvm-benchmarks" }
+# NOTE: These are NOT dependent on workspace crates becase we want to download blocks independently of
+# prover-related changes
+raiko-lib = { git = "https://github.com/NethermindEth/raiko" }
+raiko-core = { git = "https://github.com/NethermindEth/raiko" }
 
 # alloy
 alloy-primitives = { workspace = true }
-alloy-rpc-types = { workspace = true }
 
 # tracing and logging
 tracing = { workspace = true }
