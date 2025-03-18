@@ -1,6 +1,6 @@
 [
     {
-        "name": "holesky_taiko",
+        "name": "holesky",
         "chain_id": 17000,
         "max_spec_id": "CANCUN",
         "hard_forks": {
