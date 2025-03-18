@@ -1,5 +1,5 @@
 use alloy_primitives::Address;
-use alloy_rpc_types::EIP1186AccountProofResponse;
+use anyhow::Context;
 use clap::Parser;
 use raiko_core::interfaces::ProofRequest;
 use raiko_core::provider::rpc::RpcBlockDataProvider;
@@ -45,14 +45,19 @@ async fn main() -> anyhow::Result<()> {
 
     let args = Args::parse();
 
+    // Given that Taiko and Surge have different opinions on what networks to include in the default
+    // config, we list all chain specs in the config file explicitly.
+    let added_chain_spec_path = "raiko-block-downloader/config/chain_spec_lists.json";
+    let chain_specs = SupportedChainSpecs::merge_from_file(added_chain_spec_path.into())?;
+
     let taiko_network = args.taiko_network;
     let l1_network = args.l1_network;
-    let taiko_chain_spec = SupportedChainSpecs::default()
+    let taiko_chain_spec = chain_specs
         .get_chain_spec(&taiko_network)
-        .unwrap();
-    let l1_chain_spec = SupportedChainSpecs::default()
+        .with_context(|| format!("Could not find chain spec for Taiko network '{}'", taiko_network))?;
+    let l1_chain_spec = chain_specs
         .get_chain_spec(&l1_network)
-        .unwrap();
+        .with_context(|| format!("Could not find chain spec for L1 network '{}'", l1_network))?;
 
     // Create blocks directory in eval if it doesn't exist
     let blocks_dir = PathBuf::from(format!("eval/blocks-taiko_{taiko_network}"));
@@ -73,6 +78,7 @@ async fn main() -> anyhow::Result<()> {
             l1_network: l1_network.clone(),
             blob_proof_type: BlobProofType::ProofOfEquivalence,
             prover_args: Default::default(),
+            gpu_number: None,
         };
         tracing::info!("Downloading block {}", block_number);
         let raiko = Raiko::new(l1_chain_spec.clone(), taiko_chain_spec.clone(), proof_request.clone());
