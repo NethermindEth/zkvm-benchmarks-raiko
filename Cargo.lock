@@ -7208,8 +7208,17 @@ dependencies = [
  "dirs",
  "hex",
  "once_cell",
+ "pathdiff",
  "regex",
+ "risc0-binfmt",
  "sp1-sdk",
+]
+
+[[package]]
+name = "raiko-risc0-builder"
+version = "0.1.0"
+dependencies = [
+ "raiko-pipeline",
 ]
 
 [[package]]
