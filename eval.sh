@@ -11,7 +11,7 @@ BLOCKS_DIR_SUFFIX=$6;
 
 # Function to check rust version and determine correct parameter name
 check_rust_version() {
-    local toolchain=$1
+    local toolchain=$PROGRAM
     local version_output
 
     if [ -z "$toolchain" ]; then

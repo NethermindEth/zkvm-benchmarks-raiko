@@ -80,7 +80,7 @@ impl SP1Evaluator {
         let prover = SP1Prover::<CpuProverComponents>::new();
 
         #[cfg(feature = "cuda")]
-        let server = SP1CudaProver::new().expect("Failed to initialize CUDA prover");
+        let server = SP1CudaProver::new(None /* gpu_number */).expect("Failed to initialize CUDA prover");
 
         // Setup the program.
         #[cfg(not(feature = "cuda"))]
