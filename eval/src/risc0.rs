@@ -9,7 +9,7 @@ use risc0_zkvm::{
 #[cfg(feature = "risc0")]
 use crate::{
     types::ProgramId,
-    utils::{get_elf, get_reth_input, time_operation},
+    utils::{get_elf, get_raiko_input, get_reth_input, time_operation},
 };
 
 use crate::{EvalArgs, PerformanceReport};
@@ -24,7 +24,7 @@ impl Risc0Evaluator {
         // }
 
         let program = match args.program {
-            ProgramId::Reth => format!(
+            ProgramId::Reth | ProgramId::Raiko => format!(
                 "{}_{}",
                 args.program.to_string(),
                 args.block_name.as_deref().unwrap().to_string()
@@ -59,6 +59,16 @@ impl Risc0Evaluator {
                 .expect("Failed to write input to executor")
                 .build()
                 .unwrap(),
+            ProgramId::Raiko => {
+                let input = get_raiko_input(args);
+                let encoded_input = risc0_zkvm::serde::to_vec(&input).expect("Could not serialize proving input!");
+                ExecutorEnv::builder()
+                    .session_limit(None)
+                    .segment_limit_po2(args.shard_size as u32)
+                    .write_slice(&encoded_input)
+                    .build()
+                    .unwrap()
+            }
             _ => ExecutorEnv::builder()
                 .segment_limit_po2(args.shard_size as u32)
                 .build()

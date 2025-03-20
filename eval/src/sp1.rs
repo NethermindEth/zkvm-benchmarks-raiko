@@ -11,11 +11,10 @@ use sp1_stark::SP1ProverOpts;
 
 #[cfg(all(feature = "cuda", feature = "sp1"))]
 use sp1_cuda::SP1CudaProver;
-use raiko_lib::input::GuestInput;
 #[cfg(feature = "sp1")]
 use crate::{
     types::ProgramId,
-    utils::{get_elf, get_reth_input, read_block, time_operation},
+    utils::{get_elf, get_raiko_input, get_reth_input, time_operation},
 };
 
 use crate::{EvalArgs, PerformanceReport};
@@ -60,12 +59,8 @@ impl SP1Evaluator {
                     stdin.write(&args.fibonacci_input.expect("missing fibonacci input"));
                 }
                 ProgramId::Raiko => {
-                    let dir_suffix = args.taiko_blocks_dir_suffix.as_deref().expect("taiko_blocks_dir_suffix not provided");
-                    let block_name = args.block_name.as_deref().expect("block_name not provided");
-                    let guest_input_json = String::from_utf8(read_block(&format!("blocks-taiko_{dir_suffix}"), block_name, "json")).unwrap();
-                    let guest_input: GuestInput = serde_json::from_str(&guest_input_json).unwrap();
-
-                    stdin.write(&guest_input);
+                    let input = get_raiko_input(args);
+                    stdin.write(&input);
                 }
                 _ => (/* NOOP */),
             }

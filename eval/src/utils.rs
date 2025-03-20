@@ -2,6 +2,7 @@ use std::{
     env, fs,
     time::{Duration, Instant},
 };
+use raiko_lib::input::GuestInput;
 
 use crate::{
     types::{ProgramId, ProverId},
@@ -42,6 +43,12 @@ pub fn get_reth_input(args: &EvalArgs) -> Vec<u8> {
     read_block("blocks", block_name, "bin")
 }
 
+pub fn get_raiko_input(args: &EvalArgs) -> GuestInput {
+    let dir_suffix = args.taiko_blocks_dir_suffix.as_deref().expect("taiko_blocks_dir_suffix not provided");
+    let block_name = args.block_name.as_deref().expect("block_name not provided");
+    let guest_input_json = String::from_utf8(read_block(&format!("blocks-taiko_{dir_suffix}"), block_name, "json")).unwrap();
+    serde_json::from_str(&guest_input_json).expect("Failed to parse guest input JSON")
+}
 
 pub fn read_block(blocks_dir_name: &str, block_name: &str, ext: &str) -> Vec<u8> {
     let current_dir = env::current_dir().expect("Failed to get current working directory");

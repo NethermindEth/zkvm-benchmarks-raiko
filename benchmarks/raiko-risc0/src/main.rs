@@ -1,5 +1,6 @@
 #![no_main]
-harness::entrypoint!(main, tests, zk_op::tests);
+risc0_zkvm::guest::entry!(main);
+
 use raiko_lib::{
     builder::calculate_block_header, input::GuestInput, proof_type::ProofType,
     protocol_instance::ProtocolInstance,
@@ -9,7 +10,6 @@ use risc0_zkvm::guest::env;
 use zk_op::Risc0Operator;
 
 pub mod mem;
-
 pub use mem::*;
 
 fn main() {

@@ -24,6 +24,13 @@ sp1-prover = { workspace = true, optional = true }
 sp1-sdk = { workspace = true, optional = true }
 sp1-stark = { workspace = true, optional = true }
 
+# TODO: REMOVE!
+log = "0.4.26"
+serde_with = "2.3.3"
+hex = "0.4.3"
+alloy-primitives = { workspace = true }
+bytemuck = "1.13"
+
 # jolt
 jolt-sdk = { git = "https://github.com/a16z/jolt", features = ["host"], optional = true }
 fibonacci = { package = "fibonacci-jolt", path = "../benchmarks/fibonacci-jolt", optional = true }

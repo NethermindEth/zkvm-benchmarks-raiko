@@ -12763,13 +12763,17 @@ dependencies = [
 name = "zkvm-benchmarks-eval"
 version = "0.1.0"
 dependencies = [
+ "alloy-primitives 0.7.7",
  "anyhow",
  "bincode",
+ "bytemuck",
  "clap",
  "csv",
  "eyre",
  "fibonacci-jolt",
+ "hex",
  "jolt-sdk",
+ "log",
  "loop-jolt",
  "nexus-sdk",
  "raiko-lib 0.1.0 (git+https://github.com/NethermindEth/raiko-proof-aggregation?branch=zkvm-benchmarks-surge)",
@@ -12777,6 +12781,7 @@ dependencies = [
  "risc0-zkvm",
  "serde",
  "serde_json",
+ "serde_with 2.3.3",
  "sp1-cuda",
  "sp1-helper",
  "sp1-prover",
