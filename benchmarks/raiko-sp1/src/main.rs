@@ -19,11 +19,11 @@ pub fn main() {
     let header = calculate_block_header(&input);
     ct.end();
 
-    ct = CycleTracker::start("ProtocolInstance");
-    let pi = ProtocolInstance::new(&input, &header, ProofType::Sp1)
-        .unwrap()
-        .instance_hash();
-    ct.end();
+    // ct = CycleTracker::start("ProtocolInstance");
+    // let pi = ProtocolInstance::new(&input, &header, ProofType::Sp1)
+    //     .unwrap()
+    //     .instance_hash();
+    // ct.end();
 
-    sp1_zkvm::io::commit(&pi.0);
+    // sp1_zkvm::io::commit(&pi.0);
 }

@@ -130,7 +130,7 @@ else
 fi
 
 # Set the logging level.
-export RUST_LOG=info
+export RUST_LOG=debug
 
 # Detect whether we're on an instance with a GPU.
 if nvidia-smi > /dev/null 2>&1; then

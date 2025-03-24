@@ -65,7 +65,13 @@ impl SP1Evaluator {
                     let guest_input_json = String::from_utf8(read_block(&format!("blocks-taiko_{dir_suffix}"), block_number, "json")).unwrap();
                     let guest_input: GuestInput = serde_json::from_str(&guest_input_json).unwrap();
 
+                    let header = raiko_lib::builder::calculate_block_header(&guest_input);
+                    let _ = raiko_lib::protocol_instance::ProtocolInstance::new(&guest_input, &header, raiko_lib::proof_type::ProofType::Sp1)
+                        .unwrap()
+                        .instance_hash();
+
                     stdin.write(&guest_input);
+                    // return PerformanceReport::default();
                 }
                 _ => (/* NOOP */),
             }
@@ -78,6 +84,7 @@ impl SP1Evaluator {
         let cycles = get_cycles(&elf, &stdin);
 
         let prover = SP1Prover::<CpuProverComponents>::new();
+        return PerformanceReport::default();
 
         #[cfg(feature = "cuda")]
         let server = SP1CudaProver::new(None /* gpu_number */).expect("Failed to initialize CUDA prover");
