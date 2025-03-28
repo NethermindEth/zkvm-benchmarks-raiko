@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use clap::ValueEnum;
 
 /// An identifier used to select the prover to evaluate.
@@ -9,14 +10,13 @@ pub enum ProverId {
     Nexus,
 }
 
-impl ProverId {
-    /// Convert the identifier to a string.
-    pub fn to_string(&self) -> String {
+impl Display for ProverId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ProverId::Risc0 => "risc0".to_string(),
-            ProverId::SP1 => "sp1".to_string(),
-            ProverId::Jolt => "jolt".to_string(),
-            ProverId::Nexus => "nexus".to_string(),
+            ProverId::Risc0 => write!(f, "risc0"),
+            ProverId::SP1 => write!(f, "sp1"),
+            ProverId::Jolt => write!(f, "jolt"),
+            ProverId::Nexus => write!(f, "nexus"),
         }
     }
 }
@@ -53,15 +53,14 @@ pub enum ProgramId {
     Raiko
 }
 
-impl ProgramId {
-    /// Convert the identifier to a string.
-    pub fn to_string(&self) -> String {
+impl Display for ProgramId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ProgramId::Loop => "loop".to_string(),
-            ProgramId::Fibonacci => "fibonacci".to_string(),
-            ProgramId::Tendermint => "tendermint".to_string(),
-            ProgramId::Reth => "reth".to_string(),
-            ProgramId::Raiko => "raiko".to_string(),
+            ProgramId::Loop => write!(f, "loop"),
+            ProgramId::Fibonacci => write!(f, "fibonacci"),
+            ProgramId::Tendermint => write!(f, "tendermint"),
+            ProgramId::Reth => write!(f, "reth"),
+            ProgramId::Raiko => write!(f, "raiko"),
         }
     }
 }

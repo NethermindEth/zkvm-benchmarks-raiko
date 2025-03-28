@@ -32,7 +32,7 @@ impl SP1Evaluator {
             ProgramId::Reth | ProgramId::Raiko => format!(
                 "{}_{}",
                 args.program.to_string(),
-                args.block_number.unwrap().to_string()
+                args.block_name.as_deref().unwrap().to_string()
             ),
             ProgramId::Fibonacci => format!(
                 "{}_{}",
@@ -61,8 +61,8 @@ impl SP1Evaluator {
                 }
                 ProgramId::Raiko => {
                     let dir_suffix = args.taiko_blocks_dir_suffix.as_deref().expect("taiko_blocks_dir_suffix not provided");
-                    let block_number = args.block_number.expect("block_number not provided");
-                    let guest_input_json = String::from_utf8(read_block(&format!("blocks-taiko_{dir_suffix}"), block_number, "json")).unwrap();
+                    let block_name = args.block_name.as_deref().expect("block_name not provided");
+                    let guest_input_json = String::from_utf8(read_block(&format!("blocks-taiko_{dir_suffix}"), block_name, "json")).unwrap();
                     let guest_input: GuestInput = serde_json::from_str(&guest_input_json).unwrap();
 
                     stdin.write(&guest_input);

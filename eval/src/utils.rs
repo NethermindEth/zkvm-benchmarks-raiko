@@ -38,15 +38,15 @@ pub fn get_elf(args: &EvalArgs) -> String {
 }
 
 pub fn get_reth_input(args: &EvalArgs) -> Vec<u8> {
-    let block_number = args.block_number.expect("Block number is required for Reth program");
-    read_block("blocks", block_number, "bin")
+    let block_name = args.block_name.as_deref().expect("Block number is required for Reth program");
+    read_block("blocks", block_name, "bin")
 }
 
 
-pub fn read_block(blocks_dir_name: &str, block_number: u64, ext: &str) -> Vec<u8> {
+pub fn read_block(blocks_dir_name: &str, block_name: &str, ext: &str) -> Vec<u8> {
     let current_dir = env::current_dir().expect("Failed to get current working directory");
     let blocks_dir = current_dir.join("eval").join(blocks_dir_name);
-    let file_path = blocks_dir.join(format!("{block_number}.{ext}"));
+    let file_path = blocks_dir.join(format!("{block_name}.{ext}"));
 
     match fs::read(&file_path) {
         Ok(bytes) => bytes,
