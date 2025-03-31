@@ -163,7 +163,7 @@ RISC0_INFO=1 \
     --shard-size "$SHARD_SIZE" \
     --filename "$FILENAME" \
     ${ADDED_ARGS:+$(
-      [[ "$PROGRAM" == "fibonacci" ]] && echo "--fibonacci-input" || echo "--block-number"
+      [[ "$PROGRAM" == "fibonacci" ]] && echo "--fibonacci-input" || echo "--block-name"
     ) $ADDED_ARGS} \
     --taiko-blocks-dir-suffix "$BLOCKS_DIR_SUFFIX"
     # --hashfn "$HASHFN"
