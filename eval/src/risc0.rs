@@ -77,7 +77,7 @@ impl Risc0Evaluator {
 
         // Compute some statistics.
         let mut exec = ExecutorImpl::from_elf(env, &elf).unwrap();
-        //Generate the session.
+        // Generate the session.
         let (session, execution_duration) = time_operation(|| exec.run().unwrap());
         let cycles = session.user_cycles;
 

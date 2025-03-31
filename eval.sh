@@ -44,12 +44,16 @@ echo "Building program"
 if [ "$PROGRAM" == "raiko" ]; then
     echo "Building Raiko for prover $PROVER"
 
+    # Values from Raiko build script
+    TOOLCHAIN_RISC0=nightly-2024-09-05
+    TOOLCHAIN_SP1=nightly-2024-09-05
+
     # Run a builder inherited from Raiko itself
     if [ "$PROVER" == "sp1" ]; then
-        RUSTUP_TOOLCHAIN=succinct \
+        RUSTUP_TOOLCHAIN=$TOOLCHAIN_SP1 \
             cargo run --bin raiko-sp1-builder
     elif [ "$PROVER" == "risc0" ]; then
-        RUSTUP_TOOLCHAIN=nightly-2024-09-05 \
+        RUSTUP_TOOLCHAIN=$TOOLCHAIN_RISC0 \
             cargo run --bin raiko-risc0-builder
     else
         echo "Prover $PROVER is not supported for Raiko benchmark!"

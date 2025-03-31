@@ -5,9 +5,6 @@ mod sp1;
 mod types;
 mod utils;
 
-#[cfg(feature = "risc0")]
-mod risc0_raiko;
-
 use std::{
     fs::{create_dir_all, OpenOptions},
     path::PathBuf,

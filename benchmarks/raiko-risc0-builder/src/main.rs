@@ -6,16 +6,6 @@ use std::path::PathBuf;
 fn main() {
     let pipeline = Risc0Pipeline::new("benchmarks/raiko-risc0", "release");
     pipeline.bins(&["raiko-risc0"], "benchmarks/raiko-risc0/elf");
-
-    // let pipeline = Risc0Pipeline::new("provers/risc0/guest", "release");
-    // pipeline.bins(
-    //     &["risc0-guest", "risc0-aggregation"],
-    //     "provers/risc0/driver/src/methods",
-    // );
-    // #[cfg(feature = "test")]
-    // pipeline.tests(&["risc0-guest"], "provers/risc0/driver/src/methods");
-    // #[cfg(feature = "bench")]
-    // pipeline.bins(&["ecdsa", "sha256"], "provers/risc0/driver/src/methods");
 }
 
 pub struct Risc0Pipeline {
