@@ -8,6 +8,9 @@ edition = "2021"
 [dependencies]
 raiko-pipeline = { git = "https://github.com/NethermindEth/raiko-proof-aggregation", branch = "zkvm-benchmarks-surge", features = ["risc0"] }
 
+# Override a transitive dependency because latest isn't compatible with outdated risc0 rust version
+bytemuck_derive = { version = "=1.6.0" }
+
 [features]
 test = []
 bench = []

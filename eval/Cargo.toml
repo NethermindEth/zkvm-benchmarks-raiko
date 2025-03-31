@@ -16,7 +16,7 @@ tracing.workspace = true
 raiko-lib.workspace = true
 
 # risc0
-risc0-zkvm = { version = "1.2.2", features = ["prove", "unstable"], optional = true }
+risc0-zkvm = { version = "=1.2.2", features = ["prove", "unstable"], optional = true }
 
 # sp1
 sp1-cuda = { workspace = true, optional = true }
@@ -25,11 +25,11 @@ sp1-sdk = { workspace = true, optional = true }
 sp1-stark = { workspace = true, optional = true }
 
 # TODO: REMOVE!
-log = "0.4.26"
-serde_with = "2.3.3"
-hex = "0.4.3"
-alloy-primitives = { workspace = true }
-bytemuck = "1.13"
+#log = "0.4.26"
+#serde_with = "2.3.3"
+#hex = "0.4.3"
+#alloy-primitives = { workspace = true }
+#bytemuck = "1.13"
 
 # jolt
 jolt-sdk = { git = "https://github.com/a16z/jolt", features = ["host"], optional = true }

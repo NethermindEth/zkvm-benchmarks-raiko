@@ -49,7 +49,7 @@ if [ "$PROGRAM" == "raiko" ]; then
         RUSTUP_TOOLCHAIN=succinct \
             cargo run --bin raiko-sp1-builder
     elif [ "$PROVER" == "risc0" ]; then
-        RUSTUP_TOOLCHAIN=risc0 \
+        RUSTUP_TOOLCHAIN=nightly-2024-09-05 \
             cargo run --bin raiko-risc0-builder
     else
         echo "Prover $PROVER is not supported for Raiko benchmark!"
