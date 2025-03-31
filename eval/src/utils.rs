@@ -38,7 +38,7 @@ pub fn get_elf(args: &EvalArgs) -> String {
 }
 
 pub fn get_reth_input(args: &EvalArgs) -> Vec<u8> {
-    let block_name = args.block_name.as_deref().expect("Block number is required for Reth program");
+    let block_name = args.block_name.as_deref().expect("Block name is required for Reth program");
     read_block("blocks", block_name, "bin")
 }
 
