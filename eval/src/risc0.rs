@@ -116,11 +116,8 @@ impl Risc0Evaluator {
         // GROTH 16 conversion
         // Bn254 wrapping duration
 
-        let (bn254_proof, wrap_prove_duration) = time_operation(|| {
-            prover
-                .identity_p254(&compressed_proof.inner.succinct().unwrap())
-                .unwrap()
-        });
+        let (bn254_proof, wrap_prove_duration) =
+            time_operation(|| prover.identity_p254(&succinct_receipt).unwrap());
         let seal_bytes = bn254_proof.get_seal_bytes();
         tracing::info!("Running groth16 wrapper");
         let (groth16_proof, groth16_prove_duration) =
