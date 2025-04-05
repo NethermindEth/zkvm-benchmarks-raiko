@@ -9,7 +9,7 @@ use risc0_zkvm::{
 #[cfg(feature = "risc0")]
 use crate::{
     types::ProgramId,
-    utils::{get_elf, get_reth_input, time_operation},
+    utils::{get_elf, get_raiko_input, get_reth_input, time_operation},
 };
 
 use crate::{EvalArgs, PerformanceReport};
@@ -24,7 +24,7 @@ impl Risc0Evaluator {
         // }
 
         let program = match args.program {
-            ProgramId::Reth => format!(
+            ProgramId::Reth | ProgramId::Raiko => format!(
                 "{}_{}",
                 args.program.to_string(),
                 args.block_name.as_deref().unwrap().to_string()
@@ -59,6 +59,16 @@ impl Risc0Evaluator {
                 .expect("Failed to write input to executor")
                 .build()
                 .unwrap(),
+            ProgramId::Raiko => {
+                let input = get_raiko_input(args);
+                let encoded_input = risc0_zkvm::serde::to_vec(&input).expect("Could not serialize proving input!");
+                ExecutorEnv::builder()
+                    .session_limit(None)
+                    .segment_limit_po2(args.shard_size as u32)
+                    .write_slice(&encoded_input)
+                    .build()
+                    .unwrap()
+            }
             _ => ExecutorEnv::builder()
                 .segment_limit_po2(args.shard_size as u32)
                 .build()
@@ -67,7 +77,7 @@ impl Risc0Evaluator {
 
         // Compute some statistics.
         let mut exec = ExecutorImpl::from_elf(env, &elf).unwrap();
-        //Generate the session.
+        // Generate the session.
         let (session, execution_duration) = time_operation(|| exec.run().unwrap());
         let cycles = session.user_cycles;
 
@@ -106,11 +116,8 @@ impl Risc0Evaluator {
         // GROTH 16 conversion
         // Bn254 wrapping duration
 
-        let (bn254_proof, wrap_prove_duration) = time_operation(|| {
-            prover
-                .identity_p254(&compressed_proof.inner.succinct().unwrap())
-                .unwrap()
-        });
+        let (bn254_proof, wrap_prove_duration) =
+            time_operation(|| prover.identity_p254(&succinct_receipt).unwrap());
         let seal_bytes = bn254_proof.get_seal_bytes();
         tracing::info!("Running groth16 wrapper");
         let (groth16_proof, groth16_prove_duration) =

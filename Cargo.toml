@@ -3,7 +3,8 @@ members = [
     "block-downloader",
     "eval",
     "raiko-block-downloader",
-    "benchmarks/raiko-sp1-builder"
+    "benchmarks/raiko-sp1-builder",
+    "benchmarks/raiko-risc0-builder"
 ]
 resolver = "2"
 
@@ -49,7 +50,6 @@ alloy-provider = { version = "0.3", default-features = false, features = [
 ] }
 
 # SP1
-# TODO(alex): Replace with v4.0.1 and check for differences
 sp1-sdk = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-single-gpu", features = ["cuda"] }
 sp1-prover = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-single-gpu" }
 sp1-zkvm = { git = "https://github.com/NethermindEth/sp1.git", branch = "v4.0.1-single-gpu" }
