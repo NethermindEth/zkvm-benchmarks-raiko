@@ -1,7 +1,7 @@
 use raiko_pipeline::{
     parse_metadata, rerun_if_changed, CommandBuilder, GuestMetadata, Metadata, Pipeline,
 };
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
 fn main() {
     let pipeline = Risc0Pipeline::new("benchmarks/raiko-risc0", "release");
@@ -36,7 +36,11 @@ impl Pipeline for Risc0Pipeline {
                 "-mstrict-align",
                 "-falign-functions=2",
             ])
-            .custom_args(&["--ignore-rust-version"]);
+            .custom_args(&["--ignore-rust-version"])
+            .custom_env(HashMap::from([(
+                "RISC0_FEATURE_bigint2".to_string(),
+                "".to_string(),
+            )]));
         // Cannot use /.rustup/toolchains/risc0/bin/cargo, use regular cargo
         builder.unset_cargo();
         builder
