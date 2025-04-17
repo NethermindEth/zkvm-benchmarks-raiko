@@ -1,9 +1,7 @@
 use anyhow::{anyhow, Context, Result};
-use once_cell::sync::OnceCell;
 use raiko_pipeline::{
     parse_metadata, rerun_if_changed, CommandBuilder, GuestMetadata, Metadata, Pipeline,
 };
-use regex::Regex;
 use risc0_binfmt::ProgramBinary;
 use risc0_zkos_v1compat::V1COMPAT_ELF;
 use risc0_zkp::core::digest::Digest;
@@ -22,8 +20,6 @@ fn main() {
     let pipeline = Risc0Pipeline::new("benchmarks/raiko-risc0", "release");
     pipeline.bins(&["raiko-risc0"], "benchmarks/raiko-risc0/elf");
 }
-
-pub static ROOT_DIR: OnceCell<PathBuf> = OnceCell::new();
 
 pub struct Risc0Pipeline {
     pub meta: Metadata,
@@ -44,11 +40,12 @@ impl Pipeline for Risc0Pipeline {
             .rust_flags(&[
                 "passes=loweratomic",
                 "link-arg=-Ttext=0x00200800",
+                "link-arg=--fatal-warnings",
                 "panic=abort",
             ])
             .cc_compiler("gcc".into())
             .c_flags(&[
-                "/opt/riscv/bin/riscv32-unknown-elf-gcc",
+                "/Users/oghma/.risc0/cpp/bin/riscv32-unknown-elf-gcc",
                 "-march=rv32im",
                 "-mstrict-align",
                 "-falign-functions=2",
@@ -106,7 +103,9 @@ impl Risc0Pipeline {
     fn build_v2_bin(&self, dest: &str, artifacts: &[PathBuf]) {
         //pub fn risc0_placement(&self, dest: &str) -> anyhow::Result<()> {
 
-        let root = ROOT_DIR.get().expect("No reference to ROOT_DIR");
+        let root = raiko_pipeline::ROOT_DIR
+            .get()
+            .expect("No reference to ROOT_DIR");
         let dest_dir = PathBuf::from(dest);
         if !dest_dir.exists() {
             fs::create_dir_all(&dest_dir).expect("Couldn't create destination directories");
@@ -140,13 +139,6 @@ fn file_name(path: &Path) -> String {
         .to_str()
         .expect("filename is non unicode")
         .to_owned()
-}
-
-fn extract_path(line: &str) -> Option<PathBuf> {
-    let re = Regex::new(r"\(([^)]+)\)").expect("Couldn't create regex");
-    re.captures(line)
-        .and_then(|caps| caps.get(1).map(|m| m.as_str().to_string()))
-        .map(PathBuf::from)
 }
 
 /// Represents an item in the generated list of compiled guest binaries

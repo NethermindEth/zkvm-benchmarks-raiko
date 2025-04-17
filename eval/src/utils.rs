@@ -26,7 +26,7 @@ pub fn get_elf(args: &EvalArgs) -> String {
     };
 
     let elf_path = current_dir.join(format!(
-        "benchmarks/{}/target/{}/release/{}",
+        "benchmarks/{}/target/{}/release/{}.bin",
         program_dir, target_name, program_dir
     ));
 
