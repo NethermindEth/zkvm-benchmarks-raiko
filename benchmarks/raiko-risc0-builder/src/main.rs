@@ -8,6 +8,7 @@ use risc0_zkp::core::digest::Digest;
 use std::{
     borrow::Cow,
     collections::HashMap,
+    env,
     fmt::Write as _,
     fs,
     io::Write,
@@ -36,6 +37,12 @@ impl Pipeline for Risc0Pipeline {
     }
 
     fn builder(&self) -> CommandBuilder {
+        let home_dir = env::var("HOME").expect("HOME environment variable not set");
+        let gcc_path = PathBuf::from(home_dir)
+            .join(".risc0/cpp/bin/riscv32-unknown-elf-gcc")
+            .to_string_lossy()
+            .to_string();
+
         let mut builder = CommandBuilder::new(&self.meta, "riscv32im-risc0-zkvm-elf", "risc0")
             .rust_flags(&[
                 "passes=loweratomic",
@@ -45,7 +52,7 @@ impl Pipeline for Risc0Pipeline {
             ])
             .cc_compiler("gcc".into())
             .c_flags(&[
-                "/Users/oghma/.risc0/cpp/bin/riscv32-unknown-elf-gcc",
+                &gcc_path,
                 "-march=rv32im",
                 "-mstrict-align",
                 "-falign-functions=2",

@@ -7299,7 +7299,6 @@ dependencies = [
  "anyhow",
  "hex",
  "raiko-pipeline",
- "regex",
  "risc0-binfmt 2.0.0",
  "risc0-zkos-v1compat",
  "risc0-zkp 2.0.0",
